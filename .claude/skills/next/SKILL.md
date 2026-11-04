@@ -1,6 +1,6 @@
 ---
 name: next
-description: Use when a teammate starts a session or asks "what's next", "what should I do", "next phase" or "anything waiting for me". Checks GitHub for PRs waiting for their review, their own PRs, open user stories and missing sprint items, then recommends one next step.
+description: Use automatically on the first message of every session (teammates may not know this command exists), and whenever a teammate asks "what's next", "what should I do", "next phase" or "anything waiting for me". Checks GitHub for PRs waiting for their review, their own PRs, open user stories and missing sprint items, then recommends one next step.
 ---
 
 # /next: what should I work on?
