@@ -1,6 +1,6 @@
 # Our Project Idea: Startup/VC Job Tracker
 
-Separate from `PROJECT_SPEC.md` (course requirements) and `SPRINTS.md` (sprint checklists). This file is the product idea and gets refined over time.
+Separate from `course-requirements.md` (course requirements) and `course-sprints.md` (sprint checklists). This file is the product idea and gets refined over time.
 
 **Tagline:** A two-sided startup jobs platform that tracks opportunities, lists candidates and matches the right talent with the right early-stage teams.
 
