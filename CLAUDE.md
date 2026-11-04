@@ -57,7 +57,20 @@ docs/context/        LOCKED IN: course-requirements.md, course-sprints.md, produ
 docs/notes/          DRAFTS: shared team memory, meeting notes, brainstorming (not graded)
 docs/mgt656/         GRADED: team.yaml, technical.md, sprints/, retrospective.md (names fixed)
 .github/             PR template and issue templates
+.claude/skills/      team Claude Code commands: /next (what to do now), /review-pr (review a PR)
 ```
+
+## Start of every session: "what's next?"
+
+At the start of a session, or whenever a teammate says "what's next", "next phase" or similar,
+run the **`next` skill** (`.claude/skills/next/SKILL.md`). It brings their copy up to date and checks GitHub for:
+- **PRs waiting for their review** (offer to walk them through one with the `review-pr` skill)
+- their own PRs that are approved (offer to merge) or need changes
+- issues assigned to them, and unassigned user stories to pick up
+- "Done when" items still missing for the current sprint
+
+It reports in a few lines and recommends **one** next step. Reviews come first because they unblock teammates.
+If the teammate already asked for something specific, do that instead, and mention anything urgent (e.g. "PR #14 has waited 2 days for review") in one line.
 
 ## Notes workflow: our shared memory (`docs/notes/`)
 
@@ -94,6 +107,7 @@ mostly just talks to the agent.
   - Agents make that easy: every PR description says in plain language what changed, how it was checked, and **what to click to see it working**.
   - Keep PRs to one story each, so they're small and quick to review. Don't open separate PRs for tiny follow-ups.
   - Whoever is free reviews. The author pings the team chat with the PR link; nobody waits for everyone.
+  - Reviews happen in Claude Code with the `review-pr` skill (`/review-pr 14`). The approval is posted from the reviewer's own GitHub account, only after they say yes.
 - **PR description says what the agent produced vs. what the team changed or rejected** (the PR template has these sections; fill them in).
 - **No secrets in git.** Config and secrets come from environment variables. Only `.env.example` (with fake values) is committed. Never print real secrets in chat or logs.
 - **Mock OpenRouter and every external service in tests.** Tests must never call the real LLM, real APIs or send real email.

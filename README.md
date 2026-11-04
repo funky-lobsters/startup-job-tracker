@@ -21,6 +21,32 @@ founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 | `render.yaml` | Render hosting setup (staging) |
 | `.env.example` | Template for your local `.env` secrets file |
 
+## One-time setup for each teammate
+
+Tip: after step 3 you can open the folder in Claude Code and say *"do the one-time setup in README.md for me"*.
+
+1. **Accept the GitHub invite** to the `funky-lobsters` organization (check your email or github.com/funky-lobsters).
+2. **Install the GitHub CLI** (lets Claude Code read issues, open PRs and post your approvals):
+   go to https://cli.github.com, click **Download for Mac**, open the downloaded file and click through the installer.
+   Then, in Terminal:
+   ```bash
+   gh auth login
+   ```
+   Answer: **GitHub.com** → **HTTPS** → **Yes** (authenticate Git) → **Login with a web browser**, then paste the code it shows into the browser page.
+3. **Get the code** onto your laptop:
+   ```bash
+   gh repo clone funky-lobsters/startup-job-tracker ~/Developer/startup-job-tracker
+   ```
+   In the Claude desktop app, open the **Code** tab and choose that folder.
+4. Do "Run it on your computer" below. Ask a teammate privately for the Neon **dev** connection string.
+
+## Day to day in Claude Code
+
+- Type **`/next`** (or "what's next?"). Claude checks GitHub and tells you which PRs are waiting for your review,
+  the state of your own PRs, issues to pick up, and what's missing for this sprint. It recommends one step.
+- Type **`/review-pr 14`** to review PR #14. Claude explains it in plain language, runs the tests, checks it against
+  the issue, and posts your approval only after you say yes.
+
 ## Run it on your computer (first time)
 
 1. Install `uv` (a Python manager; installs Python for you, no admin password):
@@ -79,4 +105,4 @@ Environment variables: `DATABASE_URL`, `SECRET_KEY`, `DEBUG`, optional `ALLOWED_
 
 ## How we work
 
-Branch per story → PR with `Closes #<issue>` → teammate review → merge. See [CLAUDE.md](CLAUDE.md).
+Branch per story → PR with `Closes #<issue>` → **one** teammate approves (via `/review-pr`, ~5 minutes) → merge → staging redeploys. See [CLAUDE.md](CLAUDE.md).
