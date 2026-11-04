@@ -3,8 +3,8 @@
 MGT 656 team project. A two-sided startup jobs platform: job seekers track opportunities,
 founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 
-- Product idea: [docs/context/IDEA.md](docs/context/IDEA.md)
-- Course requirements: [docs/context/PROJECT_SPEC.md](docs/context/PROJECT_SPEC.md) and [docs/context/SPRINTS.md](docs/context/SPRINTS.md)
+- Product idea: [docs/context/product-idea.md](docs/context/product-idea.md)
+- Course requirements: [docs/context/course-requirements.md](docs/context/course-requirements.md) and [docs/context/course-sprints.md](docs/context/course-sprints.md)
 - AI agent instructions: [CLAUDE.md](CLAUDE.md)
 
 ## Folder layout
@@ -15,9 +15,9 @@ founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 | `accounts/` | User accounts: email login, sign up / log in / log out |
 | `core/` | Home page and general pages |
 | `templates/` | HTML pages; `base.html` is the shared layout (Pico CSS) |
-| `docs/context/` | Permanent context: spec, sprints, product idea |
-| `docs/notes/` | Meeting notes and brainstorming |
-| `docs/mgt656/` | Graded course docs (team.yaml, sprint reports, technical.md) |
+| `docs/context/` | **Locked in**: course requirements, sprint checklists, our product decisions |
+| `docs/notes/` | **Drafts**: shared team memory, meeting notes, brainstorming |
+| `docs/mgt656/` | **Graded** course docs (team.yaml, sprint reports, technical.md); names fixed |
 | `render.yaml` | Render hosting setup (staging) |
 | `.env.example` | Template for your local `.env` secrets file |
 
