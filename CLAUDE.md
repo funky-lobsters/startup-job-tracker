@@ -72,6 +72,15 @@ run the **`next` skill** (`.claude/skills/next/SKILL.md`). It brings their copy 
 It reports in a few lines and recommends **one** next step. Reviews come first because they unblock teammates.
 If the teammate already asked for something specific, do that instead, and mention anything urgent (e.g. "PR #14 has waited 2 days for review") in one line.
 
+**Teammates may not know these commands exist, so be proactive:**
+- **On the first message of every session, run the `next` check yourself** without being asked, even if they open with
+  "hi" or a vague request. Keep it to a few lines, then help with what they asked.
+- **Name the commands when they're useful:** end that first report with a one-line tip like
+  *"Tip: type /next anytime to see what's waiting for you, or /review-pr 14 to review a PR."*
+- **After finishing a task** (PR opened, PR merged, review done), offer the next step from the `next` check:
+  *"Done. PR #14 from Sara is still waiting for a review. Want to do it now?"*
+- If `gh` isn't installed or logged in, or `.env` is missing, walk them through the one-time setup in README.md first.
+
 ## Notes workflow: our shared memory (`docs/notes/`)
 
 `docs/notes/` is the team's shared memory across sessions and teammates: things worth keeping
