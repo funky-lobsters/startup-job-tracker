@@ -11,6 +11,6 @@ Closes #<!-- issue number -->
 
 ## How we checked it
 - [ ] Tests pass (`python manage.py test`)
-- [ ] Tried it locally / on staging: <!-- what you clicked and saw -->
+- [ ] Tried it locally / on staging. **What a reviewer should click to see it:** <!-- e.g. open /login, sign in as member@example.com -->
 - [ ] No secrets (passwords, API keys) in the diff
-- [ ] A teammate reviewed this PR
+- [ ] One teammate approved (read the summary, tried it; no need to read code)

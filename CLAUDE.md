@@ -89,7 +89,11 @@ mostly just talks to the agent.
 
 - **One branch per story.** Never commit directly to `main`. Name branches like `story/12-job-feed`.
 - **Every PR says `Closes #<issue>`** so the issue closes automatically when merged.
-- **A teammate reviews every PR before it is merged.**
+- **One teammate (any one, not the author) approves each PR before it is merged.** The course requires this, but we keep it light:
+  - Reviewers don't read code. They read the PR's plain-language summary, try the change (on staging or locally), and click **Approve**. Aim for about 5 minutes.
+  - Agents make that easy: every PR description says in plain language what changed, how it was checked, and **what to click to see it working**.
+  - Keep PRs to one story each, so they're small and quick to review. Don't open separate PRs for tiny follow-ups.
+  - Whoever is free reviews. The author pings the team chat with the PR link; nobody waits for everyone.
 - **PR description says what the agent produced vs. what the team changed or rejected** (the PR template has these sections; fill them in).
 - **No secrets in git.** Config and secrets come from environment variables. Only `.env.example` (with fake values) is committed. Never print real secrets in chat or logs.
 - **Mock OpenRouter and every external service in tests.** Tests must never call the real LLM, real APIs or send real email.
