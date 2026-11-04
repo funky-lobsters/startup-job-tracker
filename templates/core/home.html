@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Startup &amp; VC Job Tracker</h1>
+  <p>Track opportunities, list candidates and match talent with early-stage teams.</p>
+
+  {% if user.is_authenticated %}
+    <article>
+      <p id="login-status">You are logged in as <strong>{{ user.email }}</strong>.</p>
+    </article>
+  {% else %}
+    <article>
+      <p id="login-status">You are not logged in.</p>
+      <a href="{% url 'login' %}">Log in</a> or <a href="{% url 'signup' %}">create an account</a>.
+    </article>
+  {% endif %}
+{% endblock %}

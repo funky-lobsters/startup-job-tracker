@@ -1,0 +1,24 @@
+# Secrets: never commit these
+.env
+.env.*
+!.env.example
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Django
+staticfiles/
+media/
+*.sqlite3
+db.sqlite3
+
+# Tools / OS
+.DS_Store
+.idea/
+.vscode/
+.coverage
+htmlcov/
+.claude/settings.local.json

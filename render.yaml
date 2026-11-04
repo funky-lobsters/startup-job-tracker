@@ -1,0 +1,23 @@
+# Render Blueprint: describes our hosting setup as code.
+# Render reads this file when you create a "Blueprint" from the GitHub repo.
+# Staging only for now. Production (with its own Neon database) is added in Sprint 2.
+services:
+  - type: web
+    name: funky-lobsters-staging
+    runtime: python
+    plan: free
+    region: virginia          # close to Neon's AWS us-east-1 region
+    branch: main              # every merge to main redeploys staging
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
+    # Free plans have no pre-deploy step, so we apply migrations on each start, then start the server.
+    startCommand: python manage.py migrate --no-input && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --access-logfile -
+    envVars:
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true   # Render creates a random secret; it never appears in git
+      - key: DATABASE_URL
+        sync: false           # Render asks you to paste the Neon STAGING connection string
+      - key: WEB_CONCURRENCY
+        value: "2"            # number of gunicorn workers; fits the free plan's memory

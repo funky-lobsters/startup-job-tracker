@@ -1,0 +1,14 @@
+framework: django        # django | rails | laravel | phoenix | adonisjs
+database: postgres       # postgres | mysql
+members:
+  # Replace each placeholder with the member's course nickname and GitHub username.
+  - nickname: member-1-nickname
+    github: member-1-github
+  - nickname: member-2-nickname
+    github: member-2-github
+  - nickname: member-3-nickname
+    github: member-3-github
+  - nickname: member-4-nickname
+    github: member-4-github
+  - nickname: member-5-nickname
+    github: member-5-github
