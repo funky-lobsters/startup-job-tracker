@@ -68,6 +68,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "accounts",
     "core",
+    "abtest",
 ]
 
 MIDDLEWARE = [
@@ -158,6 +159,9 @@ USE_TZ = True
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "static"]
+# Locally and in tests, serve static files straight from the app folders (no collectstatic needed).
+WHITENOISE_AUTOREFRESH = DEBUG or TESTING
+WHITENOISE_USE_FINDERS = DEBUG or TESTING
 STORAGES = {
     "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {

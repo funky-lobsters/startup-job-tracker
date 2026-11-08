@@ -49,6 +49,8 @@ manage.py            Django's command-line entry point
 config/              project settings, URLs, WSGI (settings.py reads env vars)
 accounts/            custom user model (email login), sign up / log in / log out
 core/                home page and general pages
+abtest/              A/B test page /26fd193, /26fd193/stats, traffic-source tracking (graded)
+accounts/management/commands/seed.py   `python manage.py seed`: grader accounts (passwords from env vars)
 templates/           HTML templates (base.html holds the shared layout, Pico CSS from CDN)
 render.yaml          Render deployment blueprint (staging)
 requirements.txt     Python packages (pinned)

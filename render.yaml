@@ -10,8 +10,9 @@ services:
     branch: main              # every merge to main redeploys staging
     autoDeploy: true
     buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
-    # Free plans have no pre-deploy step, so we apply migrations on each start, then start the server.
-    startCommand: python manage.py migrate --no-input && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --access-logfile -
+    # Free plans have no pre-deploy step, so on each start we apply migrations, run the (idempotent)
+    # seed command to make sure the grader accounts exist, then start the server.
+    startCommand: python manage.py migrate --no-input && python manage.py seed && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --access-logfile -
     envVars:
       - key: DEBUG
         value: "false"
@@ -19,5 +20,9 @@ services:
         generateValue: true   # Render creates a random secret; it never appears in git
       - key: DATABASE_URL
         sync: false           # Render asks you to paste the Neon STAGING connection string
+      - key: GRADER_ADMIN_PASSWORD
+        sync: false           # Render asks you for it; also goes in the submission notes
+      - key: GRADER_MEMBER_PASSWORD
+        sync: false
       - key: WEB_CONCURRENCY
         value: "2"            # number of gunicorn workers; fits the free plan's memory
