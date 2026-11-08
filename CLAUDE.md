@@ -26,7 +26,7 @@ Team: **funky-lobsters** (MGT 656 at Yale). Product: a startup/VC job tracker.
 
 Before doing any work, read all three files in `docs/context/`. They are the **locked-in source of truth**:
 
-1. `docs/context/course-requirements.md`: course requirements, grading, A/B test page spec (from the course; don't change)
+1. `docs/context/course-requirements.md`: course requirements, grading, A/B test page spec (the course's text, unchanged; plus a clearly marked "Addendum from class" the team added)
 2. `docs/context/course-sprints.md`: per-sprint "Done when" checklists and deadlines (from the course; don't change)
 3. `docs/context/product-idea.md`: **our locked-in product decisions** (what we build and for whom)
 
@@ -129,6 +129,8 @@ mostly just talks to the agent.
 
 - Team nickname: `funky-lobsters`. A/B test page: **`/26fd193`**, stats at **`/26fd193/stats`**
   (from `printf %s funky-lobsters | shasum`, never `echo`).
+- **The A/B page must also record each visitor's traffic source** from the HTTP `Referer` header
+  (Law School, SOM and a third source). This is graded. See "Addendum from class" in `docs/context/course-requirements.md`.
 - Login is by **email + password** (custom user model `accounts.User`). Log in page is `/login/`.
 - Local development uses a Neon Postgres "dev" database via `DATABASE_URL` in `.env`.
   Tests use a throwaway SQLite database by default (set `TEST_DATABASE_URL` to test against Postgres).

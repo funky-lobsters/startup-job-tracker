@@ -119,6 +119,42 @@ Also serve public `/<hash>/stats` returning JSON with a `preferred` key (`"kudos
 
 After Sprint 4, a Playwright bot visits production during an announced window of a few hours. Each visit is a new visitor. It clicks one variant more often than the other, with a fixed preference. Free hosting that sleeps is fine (the bot wakes the app first). There is no practice run, so test the counting yourself. **Your own test visits count, so delete them before the run.** Kyle reads `preferred` from `/stats` right after the run, and that value is graded.
 
+### Addendum from class: traffic source tracking (graded)
+
+*Added by the team on 2026-11-04 from Kyle's announcement in class. It is not on the course website yet. Everything above this addendum is the course's own text.*
+
+Kyle will send bot traffic to our A/B page from **three sources**: the Law School, SOM, and a third one (name not remembered; confirm with Kyle). It is **graded**: we must work out where each visitor came from, using the HTTP **`Referer`** header (the address of the page that linked to us; the header name is misspelled in the HTTP standard). Kyle said to ask our AI how to do it, and that it should be fairly easy.
+
+Our interpretation (acceptance criteria for the A/B page story):
+
+- On a visitor's **first** visit to `/26fd193` (the same moment the impression is counted), store with the impression:
+  - the raw `Referer` header value (empty if missing), and
+  - the derived **source**: the referrer's host name, e.g. `law.yale.edu`, `som.yale.edu`, or `direct` if there was no Referer.
+  - Don't hard-code a list of three: record whatever host arrives, so the unknown third source is counted automatically.
+- A visitor's click belongs to that visitor's source. **Never** take the source from the click request: its Referer is our own page.
+- Reloads and the redirect after a click must not overwrite the stored source (same rule as impressions).
+- `/26fd193/stats` keeps the `preferred` key exactly as specified and adds a breakdown by source (extra keys are allowed), e.g.:
+
+```json
+{"preferred": "kudos",
+ "kudos": {"impressions": 212, "clicks": 63},
+ "thanks": {"impressions": 207, "clicks": 21},
+ "sources": {
+   "law.yale.edu": {"kudos": {"impressions": 80, "clicks": 30}, "thanks": {"impressions": 78, "clicks": 9}},
+   "som.yale.edu": {"kudos": {"impressions": 70, "clicks": 20}, "thanks": {"impressions": 69, "clicks": 7}},
+   "direct":       {"kudos": {"impressions": 62, "clicks": 13}, "thanks": {"impressions": 60, "clicks": 5}}
+ }}
+```
+
+- Tests cover: Referer from two different sites, a missing Referer (`direct`), a reload with a different Referer (source unchanged), and a click (source unchanged).
+- Test visits count here too: purge them from production before the run.
+
+Open questions to confirm with Kyle (update this addendum when answered):
+1. Exactly how is it graded? Does he read a key from `/stats` (and what name/format), or something else?
+2. What is the third source (besides the Law School and SOM)?
+3. Is it the same bot run as the A/B run after Sprint 4, or a separate one? When?
+4. Should the source be the host name (`law.yale.edu`) or a school label (`Law School`)?
+
 ## Hosting
 
 Free tiers can work. Suggestions:
