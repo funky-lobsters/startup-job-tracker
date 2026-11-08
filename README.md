@@ -14,6 +14,7 @@ founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 | `config/` | Django settings (reads environment variables), URL routes |
 | `accounts/` | User accounts: email login, sign up / log in / log out |
 | `core/` | Home page and general pages |
+| `abtest/` | A/B test page `/26fd193`, stats `/26fd193/stats`, traffic-source tracking |
 | `templates/` | HTML pages; `base.html` is the shared layout (Pico CSS) |
 | `docs/context/` | **Locked in**: course requirements, sprint checklists, our product decisions |
 | `docs/notes/` | **Drafts**: shared team memory, meeting notes, brainstorming |
@@ -79,6 +80,16 @@ Tip: after step 3 you can open the folder in Claude Code and say *"do the one-ti
    Open http://127.0.0.1:8000.
 
 Every later time, only `source .venv/bin/activate` and `python manage.py runserver` are needed.
+
+## Seed command (grader accounts)
+
+```bash
+python manage.py seed
+```
+
+Creates or updates `admin@example.com` and `member@example.com` with the passwords in
+`GRADER_ADMIN_PASSWORD` / `GRADER_MEMBER_PASSWORD` (from `.env` locally, Render settings on staging).
+Safe to run any number of times. Render runs it automatically on every start.
 
 ## Run the tests
 

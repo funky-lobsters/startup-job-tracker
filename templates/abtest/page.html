@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Funky Lobsters{% endblock %}
+
+{% block content %}
+  <article>
+    <h1>Team funky-lobsters</h1>
+    <p>Team members:</p>
+    <ul>
+      {% for nickname in nicknames %}<li>{{ nickname }}</li>{% endfor %}
+    </ul>
+
+    <form method="post" action="{% url 'ab_click' %}">
+      <button id="abtest" type="submit">{{ visitor.variant }}</button>
+    </form>
+
+    {% if clicked %}<p>Thanks for clicking!</p>{% endif %}
+  </article>
+{% endblock %}
