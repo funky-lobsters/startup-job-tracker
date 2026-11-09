@@ -24,22 +24,41 @@ founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 
 ## One-time setup for each teammate
 
-Tip: after step 3 you can open the folder in Claude Code and say *"do the one-time setup in README.md for me"*.
+About 15 minutes, once per laptop. Claude does most of it for you.
 
-1. **Accept the GitHub invite** to the `funky-lobsters` organization (check your email or github.com/funky-lobsters).
-2. **Install the GitHub CLI** (lets Claude Code read issues, open PRs and post your approvals):
-   go to https://cli.github.com, click **Download for Mac**, open the downloaded file and click through the installer.
-   Then, in Terminal:
-   ```bash
-   gh auth login
-   ```
-   Answer: **GitHub.com** → **HTTPS** → **Yes** (authenticate Git) → **Login with a web browser**, then paste the code it shows into the browser page.
-3. **Get the code** onto your laptop:
-   ```bash
-   gh repo clone funky-lobsters/startup-job-tracker ~/Developer/startup-job-tracker
-   ```
-   In the Claude desktop app, open the **Code** tab and choose that folder.
-4. Do "Run it on your computer" below. Ask a teammate privately for the Neon **dev** connection string.
+**How syncing works:** your laptop holds its own full copy of the project, and GitHub holds the shared
+master copy. Nothing syncs automatically like Google Drive: your changes reach GitHub when Claude uploads
+them (push, then a PR), and teammates' changes reach you when Claude downloads them (pull). `/next` downloads
+the latest version at the start of every session.
+
+1. **Accept the GitHub invite** to the `funky-lobsters` organization: open the email from GitHub, or go to
+   https://github.com/orgs/funky-lobsters/invitation and click **Join funky-lobsters**.
+2. **Install the GitHub CLI** (lets Claude talk to GitHub for you): go to https://cli.github.com,
+   click **Download for Mac**, open the downloaded file and click through the installer.
+3. **Make a folder for your projects.** Any name works (e.g. `Developer`, `Projects`, `MGT656`), but:
+   - put it directly in your home folder (in Finder press **Cmd+Shift+H**, then **File → New Folder**)
+   - **not** in iCloud Drive, Dropbox, OneDrive, Google Drive, or Desktop/Documents if iCloud syncs them
+     (their syncing clashes with GitHub's and can corrupt files)
+   - no spaces or special characters in the name (`MGT656`, not `MGT 656 Project!`)
+4. In the **Claude app → Code tab**, open that folder and type:
+   > *Clone funky-lobsters/startup-job-tracker into this folder and do the one-time setup from its README.*
+
+   Claude logs you into GitHub (click **Authorize** in the browser when asked), downloads the project
+   and installs what it needs.
+5. **From now on, always start Claude Code sessions in the `startup-job-tracker` folder** (inside the folder you made).
+6. **Ask Ben privately for the Neon dev database address** (never in a group chat). Claude will show you where
+   to paste it in your `.env` file.
+
+<details><summary>Doing it by hand instead (for Claude or the curious)</summary>
+
+```bash
+gh auth login        # GitHub.com → HTTPS → Yes → Login with a web browser
+```
+```bash
+gh repo clone funky-lobsters/startup-job-tracker <your-folder>/startup-job-tracker
+```
+Then follow "Run it on your computer" below.
+</details>
 
 ## Day to day in Claude Code
 
