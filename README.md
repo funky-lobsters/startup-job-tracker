@@ -44,8 +44,11 @@ the latest version at the start of every session.
    > *Clone funky-lobsters/startup-job-tracker into this folder and do the one-time setup from its README.*
 
    Claude logs you into GitHub (click **Authorize** in the browser when asked), downloads the project
-   and installs what it needs.
-5. **From now on, always start Claude Code sessions in the `startup-job-tracker` folder** (inside the folder you made).
+   and installs what it needs. Along the way:
+   - when Claude asks to run a command, click **Allow**
+   - if a Mac popup asks to install "command line developer tools", click **Install** and wait (5–10 minutes)
+5. **When it's done, start a new Claude Code session and choose the `startup-job-tracker` folder** (inside the
+   folder you made). Always use that folder from now on: `/next` and `/review-pr` only work there.
 6. **Ask Ben privately for the Neon dev database address** (never in a group chat). Claude will show you where
    to paste it in your `.env` file.
 
