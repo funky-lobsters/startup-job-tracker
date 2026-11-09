@@ -60,7 +60,23 @@ docs/notes/          DRAFTS: shared team memory, meeting notes, brainstorming (n
 docs/mgt656/         GRADED: team.yaml, technical.md, sprints/, retrospective.md (names fixed)
 .github/             PR template and issue templates
 .claude/skills/      team Claude Code commands: /next (what to do now), /review-pr (review a PR)
+scripts/cloud-setup.sh  installs Python packages at the start of a cloud session
 ```
+
+## Cloud sessions (how most of the team works)
+
+Most teammates use Claude Code in **cloud mode**: each session runs on a fresh Anthropic-hosted computer
+with a copy of the GitHub repo, not on their laptop (see README.md, "Getting started"). You're in one if
+`CLAUDE_CODE_REMOTE_SESSION_ID` is set.
+
+- **First thing in every cloud session:** run `bash scripts/cloud-setup.sh`. It installs the Python packages into `.venv`
+  and creates a local `.env` with no real secrets. Then use `.venv/bin/python manage.py ...`.
+- **GitHub:** use `gh api` (REST) only. `gh pr` and `gh issue` don't work in cloud sessions. The skills already follow this.
+- **Database:** tests use SQLite and need nothing. Don't ask teammates to paste database addresses into a cloud session.
+- **No live preview:** teammates can't open the app running inside the cloud computer. Show that it works through the tests,
+  and tell them what to click **on staging after the merge**.
+- **Finishing work:** push to a `story/<n>-...` branch and open the PR yourself (or tell them to click **Create PR**),
+  following the working rules below.
 
 ## Start of every session: "what's next?"
 
