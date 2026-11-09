@@ -2,13 +2,13 @@ framework: django        # django | rails | laravel | phoenix | adonisjs
 database: postgres       # postgres | mysql
 members:
   # Course nickname + GitHub username for each member. The A/B page (/26fd193) lists these nicknames
-  # (blank ones are skipped). TODO: fill in the three blank members before grading.
+  # (blank ones are skipped). TODO: fill in the two blank members before grading.
   - nickname: alert-moose
     github: benjaminpascu
   - nickname: smiling-squirrel
     github: Bemnet-Kinfe
-  - nickname: ""
-    github: ""
+  - nickname: relieved-hyena
+    github: nishthabahal01
   - nickname: ""
     github: ""
   - nickname: ""
