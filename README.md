@@ -24,22 +24,50 @@ founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 
 ## One-time setup for each teammate
 
-Tip: after step 3 you can open the folder in Claude Code and say *"do the one-time setup in README.md for me"*.
+About 15–20 minutes, once per laptop. Claude does almost all of it for you.
 
-1. **Accept the GitHub invite** to the `funky-lobsters` organization (check your email or github.com/funky-lobsters).
-2. **Install the GitHub CLI** (lets Claude Code read issues, open PRs and post your approvals):
-   go to https://cli.github.com, click **Download for Mac**, open the downloaded file and click through the installer.
-   Then, in Terminal:
-   ```bash
-   gh auth login
-   ```
-   Answer: **GitHub.com** → **HTTPS** → **Yes** (authenticate Git) → **Login with a web browser**, then paste the code it shows into the browser page.
-3. **Get the code** onto your laptop:
-   ```bash
-   gh repo clone funky-lobsters/startup-job-tracker ~/Developer/startup-job-tracker
-   ```
-   In the Claude desktop app, open the **Code** tab and choose that folder.
-4. Do "Run it on your computer" below. Ask a teammate privately for the Neon **dev** connection string.
+**How syncing works:** your laptop holds its own full copy of the project, and GitHub holds the shared
+master copy. Nothing syncs automatically like Google Drive: your changes reach GitHub when Claude uploads
+them (push, then a PR), and teammates' changes reach you when Claude downloads them (pull). `/next` downloads
+the latest version at the start of every session.
+
+1. **Accept the GitHub invite** to the `funky-lobsters` organization: open the email from GitHub, or go to
+   https://github.com/orgs/funky-lobsters/invitation and click **Join funky-lobsters**.
+2. **Make a folder for your projects.** Any name works (e.g. `Developer`, `Projects`, `MGT656`), but:
+   - put it directly in your home folder (in Finder press **Cmd+Shift+H**, then **File → New Folder**)
+   - **not** in iCloud Drive, Dropbox, OneDrive, Google Drive, or Desktop/Documents if iCloud syncs them
+     (their syncing clashes with GitHub's and can corrupt files)
+   - no spaces or special characters in the name (`MGT656`, not `MGT 656 Project!`)
+3. In the **Claude app → Code tab**, open that folder and paste:
+   > *Clone https://github.com/funky-lobsters/startup-job-tracker into this folder with git, then do the one-time setup from its README.*
+
+   Claude downloads the project, installs everything it needs (no admin password) and logs you into GitHub.
+   Along the way:
+   - when Claude asks to run a command, click **Allow**
+   - if a Mac popup asks to install "command line developer tools", click **Install** and wait (5–10 minutes),
+     then tell Claude it's done
+   - when GitHub opens in your browser, enter the code Claude shows you and click **Authorize**
+4. **When it's done, start a new Claude Code session and choose the `startup-job-tracker` folder** (inside the
+   folder you made). Always use that folder from now on: `/next` and `/review-pr` only work there.
+5. **Ask Ben privately for the Neon dev database address** (never in a group chat). Claude will show you where
+   to paste it in your `.env` file.
+
+<details><summary>For Claude: how to do the one-time setup</summary>
+
+Do these in order, explaining each step in one plain sentence. The teammate has never used a terminal.
+
+1. **Git:** `xcode-select -p` succeeds if it's installed. If not, run `xcode-select --install`, tell the teammate
+   to click **Install** in the popup, and wait until they say it finished.
+2. **GitHub CLI (`gh`)**, without admin rights or Homebrew, if `command -v gh` finds nothing: download the official
+   release zip for this Mac (`uname -m`: `arm64` → `macOS_arm64`, `x86_64` → `macOS_amd64`) from
+   https://github.com/cli/cli/releases/latest into a temporary folder, unzip it, copy `bin/gh` to `~/.local/bin/`,
+   and make sure `~/.local/bin` is on `PATH` in `~/.zshrc`.
+3. **Log in to GitHub:** `gh auth login --hostname github.com --git-protocol https --web`. It needs a real terminal,
+   so run it where the teammate can see it (e.g. the app's Terminal panel) and walk them through it.
+   Then `gh auth setup-git` so pushing works. Check with `gh auth status`.
+4. Follow "Run it on your computer" below (create `.env`; leave `DATABASE_URL` for the teammate to paste).
+5. Run `python manage.py test` to confirm it works, then tell them to reopen Claude in the `startup-job-tracker` folder.
+</details>
 
 ## Day to day in Claude Code
 
