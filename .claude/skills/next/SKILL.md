@@ -16,19 +16,26 @@ git fetch -q origin
 
 - If there are uncommitted changes, say so in one line and ask what to do before switching anything.
 - If on `main` and behind `origin/main`, run `git pull --ff-only` and say "Updated your copy to the latest version."
-- If `gh auth status` fails, stop and walk them through `gh auth login` (see README.md, "One-time setup").
+- **Cloud session** (a fresh computer each time): run `bash scripts/cloud-setup.sh` once first (see CLAUDE.md, "Cloud sessions"). You're already up to date.
+- **On a laptop:** if `gh api user` fails, walk them through `gh auth login` (see README.md, "Working on your own laptop").
 
 ## 2. Collect what's open
 
+Use only `gh api` (GitHub's REST API). It works both on laptops and in cloud sessions, where `gh pr` / `gh issue` are blocked.
+
 ```bash
-gh api user --jq .login                                   # who am I
-gh pr list --state open --json number,title,author,reviewDecision,isDraft,url,createdAt
-gh issue list --state open --label "user story" --json number,title,assignees,url
-gh issue list --state open --assignee @me --json number,title,url
+R=repos/funky-lobsters/startup-job-tracker
+ME=$(gh api user --jq .login)                              # who am I
+gh api "$R/pulls?state=open" --jq '.[] | {number, title, author: .user.login, draft, created_at, branch: .head.ref}'
+gh api "$R/pulls/<n>/reviews" --jq '[.[] | {user: .user.login, state}]'     # for each open PR: its reviews
+gh api "$R/issues?state=open&labels=user%20story" --jq '.[] | select(.pull_request | not) | {number, title, assignees: [.assignees[].login]}'
+gh api "$R/issues?state=open&assignee=$ME" --jq '.[] | select(.pull_request | not) | {number, title}'
 ```
 
+A PR counts as **approved** if its latest review from some teammate is `APPROVED`, and **changes requested** if the latest is `CHANGES_REQUESTED`.
+
 Sort into:
-1. **PRs waiting for my review**: open, not draft, author is not me, `reviewDecision` is not `APPROVED`. Oldest first.
+1. **PRs waiting for my review**: open, not draft, author is not me, not approved. Oldest first.
 2. **My own PRs**: `APPROVED` → offer to merge. `CHANGES_REQUESTED` → offer to fix. Otherwise "waiting for a reviewer; post the link in the team chat."
 3. **My assigned issues** that have no open PR yet.
 4. **Unassigned user stories** that anyone can pick up.
@@ -60,8 +67,10 @@ Priority for the recommendation: reviews waiting more than 1 day → merge my ap
 ## 5. Acting on their answer
 
 - **Review a PR** → follow the `review-pr` skill.
-- **Merge my approved PR** → `gh pr merge <n> --merge --delete-branch`, then `git switch main && git pull --ff-only`.
-- **Start an issue** → `gh issue edit <n> --add-assignee @me`; `git switch main && git pull --ff-only`;
+- **Merge my approved PR** → `gh api -X PUT $R/pulls/<n>/merge -f merge_method=merge`, then delete its branch with
+  `gh api -X DELETE $R/git/refs/heads/<branch>`, then `git switch main && git pull --ff-only`.
+  If the cloud refuses the merge, give the teammate the PR link and tell them to click **Merge pull request** → **Confirm merge**.
+- **Start an issue** → `gh api -X POST $R/issues/<n>/assignees -f "assignees[]=$ME"`; `git switch main && git pull --ff-only`;
   `git switch -c story/<n>-<short-slug>`; read the issue's acceptance criteria; explain the plan in plain language; then build it.
   The PR must say `Closes #<n>` and fill in the PR template (including "What a reviewer should click to see it").
 
