@@ -4,7 +4,8 @@ MGT 656 team project. A two-sided startup jobs platform: job seekers track oppor
 founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 
 - Product idea: [docs/context/product-idea.md](docs/context/product-idea.md)
-- Course requirements: [docs/context/course-requirements.md](docs/context/course-requirements.md) and [docs/context/course-sprints.md](docs/context/course-sprints.md)
+- Course requirements (source of truth, kept up to date by Kyle): [yale-mgt-656-fall-2026/project-requirements](https://github.com/yale-mgt-656-fall-2026/project-requirements)
+- Our notes on the requirements: [docs/context/course-requirements.md](docs/context/course-requirements.md) and [docs/context/course-sprints.md](docs/context/course-sprints.md)
 - AI agent instructions: [CLAUDE.md](CLAUDE.md)
 
 ## Folder layout
