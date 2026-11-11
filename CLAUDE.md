@@ -87,13 +87,13 @@ with a copy of the GitHub repo, not on their laptop (see README.md, "Getting sta
 
 At the start of a session, or whenever a teammate says "what's next", "next phase" or similar,
 run the **`next` skill** (`.claude/skills/next/SKILL.md`). It brings their copy up to date and checks GitHub for:
-- **PRs waiting for their review** (offer to walk them through one with the `review-pr` skill)
+- **their own PRs with no review yet** (offer to run the agent review with the `review-pr` skill)
 - their own PRs that are approved (offer to merge) or need changes
 - issues assigned to them, and unassigned user stories to pick up
 - "Done when" items still missing for the current sprint
 
-It reports in a few lines and recommends **one** next step. Reviews come first because they unblock teammates.
-If the teammate already asked for something specific, do that instead, and mention anything urgent (e.g. "PR #14 has waited 2 days for review") in one line.
+It reports in a few lines and recommends **one** next step. Getting their own PRs reviewed and merged comes first.
+If the teammate already asked for something specific, do that instead, and mention anything urgent (e.g. "your PR #14 has no review yet") in one line.
 
 **Teammates may not know these commands exist, so be proactive:**
 - **On the first message of every session, run the `next` check yourself** without being asked, even if they open with
@@ -101,7 +101,7 @@ If the teammate already asked for something specific, do that instead, and menti
 - **Name the commands when they're useful:** end that first report with a one-line tip like
   *"Tip: type /next anytime to see what's waiting for you, or /review-pr 14 to review a PR."*
 - **After finishing a task** (PR opened, PR merged, review done), offer the next step from the `next` check:
-  *"Done. PR #14 from Sara is still waiting for a review. Want to do it now?"*
+  *"Done. PR #14 is open. Want me to run the agent review on it now? (A new session gives a fresher look.)"*
 - If `gh` isn't installed or logged in, or `.env` is missing, walk them through the one-time setup in README.md first.
 
 ## Notes workflow: our shared memory (`docs/notes/`)
@@ -134,12 +134,16 @@ mostly just talks to the agent.
 
 - **One branch per story.** Never commit directly to `main`. Name branches like `story/12-job-feed`.
 - **Every PR says `Closes #<issue>`** so the issue closes automatically when merged.
-- **One teammate (any one, not the author) approves each PR before it is merged.** The course requires this, but we keep it light:
-  - Reviewers don't read code. They read the PR's plain-language summary, try the change (on staging or locally), and click **Approve**. Aim for about 5 minutes.
-  - Agents make that easy: every PR description says in plain language what changed, how it was checked, and **what to click to see it working**.
+- **Every PR gets a review before it is merged, and an agent review counts** (Kyle, 2026-11-11; see the addendum in
+  `docs/context/course-requirements.md`). Nobody waits for a teammate:
+  - The author runs `/review-pr <n>` on their own PR, ideally in a **new session** so the reviewer isn't the agent that wrote the code.
+  - The review is a real check: tests, every acceptance criterion, the rules below. It's posted on the PR as a comment review
+    starting with `Agent review:` (GitHub doesn't allow approving your own PR). A failing review blocks the merge.
+  - A teammate can still review with the same skill; their review counts too, but it's never required.
+  - Every PR description still says in plain language what changed, how it was checked, and **what to click to see it working**.
   - Keep PRs to one story each, so they're small and quick to review. Don't open separate PRs for tiny follow-ups.
-  - Whoever is free reviews. The author pings the team chat with the PR link; nobody waits for everyone.
-  - Reviews happen in Claude Code with the `review-pr` skill (`/review-pr 14`). The approval is posted from the reviewer's own GitHub account, only after they say yes.
+- **Agents do the writing** (PR descriptions, sprint reports, `technical.md`, notes) so teammates don't have to. It must stay true:
+  agents never invent what the team changed or rejected, or a "working with agents" example; take them from what happened in the session.
 - **PR description says what the agent produced vs. what the team changed or rejected** (the PR template has these sections; fill them in).
 - **No secrets in git.** Config and secrets come from environment variables. Only `.env.example` (with fake values) is committed. Never print real secrets in chat or logs.
 - **Mock OpenRouter and every external service in tests.** Tests must never call the real LLM, real APIs or send real email.

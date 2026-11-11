@@ -58,8 +58,9 @@ GitHub project. Claude makes the changes there, then sends them back to GitHub a
    time), then tells you what's waiting for you: PRs to review, your issues, and what's missing for this sprint.
 3. Work on **one story per session**: say which issue to work on (e.g. "work on issue #14"). Claude builds it, runs the
    tests, and opens a PR that says `Closes #14`. If you see a **Create PR** button instead, click it.
-4. Post the PR link in the team chat. One teammate reviews it with **`/review-pr 14`**. After it's merged, staging updates
-   on its own, and the PR says what to click there to see your change.
+4. Review it yourself with **`/review-pr 14`** (best in a new session): an agent checks the tests and the issue's
+   acceptance criteria and posts its review on the PR. If it passes, say "merge". No need to wait for a teammate.
+   After it's merged, staging updates on its own, and the PR says what to click there to see your change.
 
 **Good to know**
 - You **can't open the app running inside the cloud computer**. Claude shows it works through automated tests, and
@@ -71,8 +72,8 @@ GitHub project. Claude makes the changes there, then sends them back to GitHub a
 
 - Type **`/next`** (or "what's next?"). Claude checks GitHub and tells you which PRs are waiting for your review,
   the state of your own PRs, issues to pick up, and what's missing for this sprint. It recommends one step.
-- Type **`/review-pr 14`** to review PR #14. Claude explains it in plain language, runs the tests, checks it against
-  the issue, and posts your approval only after you say yes. If GitHub refuses the approval from the cloud, Claude
+- Type **`/review-pr 14`** to review PR #14 (yours or a teammate's). Claude explains it in plain language, runs the tests,
+  checks it against the issue, and posts its review on the PR after you say yes. If GitHub refuses from the cloud, Claude
   tells you which buttons to click on GitHub instead.
 
 ## Working on your own laptop (optional, more setup)
@@ -195,4 +196,4 @@ Environment variables: `DATABASE_URL`, `SECRET_KEY`, `DEBUG`, optional `ALLOWED_
 
 ## How we work
 
-Branch per story → PR with `Closes #<issue>` → **one** teammate approves (via `/review-pr`, ~5 minutes) → merge → staging redeploys. See [CLAUDE.md](CLAUDE.md).
+Branch per story → PR with `Closes #<issue>` → agent review on the PR (`/review-pr`, the author can run it) → merge → staging redeploys. See [CLAUDE.md](CLAUDE.md).

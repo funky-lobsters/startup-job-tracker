@@ -45,7 +45,7 @@ Submit: repo URL, staging URL, notes (login page plus username and password per 
 
 Done when:
 - [ ] **Production** is deployed, with its own database
-- [ ] First user stories are shipped through reviewed pull requests (`Closes #<issue>`, teammate review, PR description says what the agent produced and what the team changed or rejected)
+- [ ] First user stories are shipped through reviewed pull requests (`Closes #<issue>`, a review by a teammate or an agent (see the agent review addendum in `course-requirements.md`), PR description says what the agent produced and what the team changed or rejected)
 - [ ] AI feature is started (OpenRouter, called from the server only)
 - [ ] `docs/mgt656/sprints/sprint-2.md` is on `main`
 
@@ -100,7 +100,7 @@ Grader accounts must use fake data, passwords used nowhere else, and no 2FA or e
 ## Sprint rules (from the project page)
 
 - At sprint start, put committed stories in that iteration on the GitHub Project. Unfinished stories roll to the next iteration, never deleted.
-- Work on branches. Every PR says `Closes #<issue>` and gets a teammate review before merging.
+- Work on branches. Every PR says `Closes #<issue>` and gets a review before merging (a teammate or an agent; see `course-requirements.md`).
 - No story points, velocity, or burndown charts.
 - Never put passwords or keys in the repo.
 

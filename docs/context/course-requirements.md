@@ -29,6 +29,30 @@ Rules for agents:
 - **Team nickname: `funky-lobsters` → A/B page at `/26fd193`, stats at `/26fd193/stats`.**
   Computed with `printf %s funky-lobsters | shasum` (never `echo`). Spelling confirmed from the course site.
 
+## Addendum from Kyle (2026-11-11): agents may review pull requests
+
+*Kyle confirmed verbally to the team on 2026-11-11 that this applies **as of now**. He will update his requirements repo
+later; until he does, his repo still says "reviewed by a teammate", and this addendum is the exception to "Kyle's repo wins" for this one point.
+When his repo changes, his wording wins and this section should be updated or removed.*
+
+What Kyle said: what matters is that every pull request gets a real check and review, not that a human does it.
+A reviewing agent counts as the "team member" reviewer. The goal is to remove waiting on each other.
+
+Our rules from this:
+- **Every PR still gets a review before merging.** It can come from an agent (the `review-pr` skill) instead of a teammate.
+  The author can run it on their own PR; nobody has to wait for someone else.
+- **The review is a real check, not a rubber stamp:** run the tests, check every acceptance criterion in the issue,
+  check the CLAUDE.md rules (no secrets, migrations, mocked external calls), and say plainly if something fails.
+  A failing review blocks the merge until it's fixed and reviewed again.
+- **The review is written on the PR** as a GitHub review comment starting with `Agent review:`, so graders can see it.
+  (GitHub never lets you click **Approve** on your own PR, so an agent working from the author's account posts a comment
+  review instead.)
+- **Agents may also do the writing:** PR descriptions, sprint reports, `technical.md`, notes. The writing must stay true:
+  "What the team changed or rejected" and the sprint report's "working with agents" example describe what really happened
+  in the session, and an agent never invents them.
+- **One human click stays:** the author still says "yes, merge" in their own session. That's not a bottleneck on anyone else.
+  Deploying to production and deleting data still need a human yes.
+
 ## Addendum from class: traffic source tracking (graded)
 
 *Added by the team on 2026-11-04 from Kyle's announcement in class. It is not in Kyle's requirements repo yet. When Kyle adds it there, his version wins and this section should be updated or removed.*

@@ -13,4 +13,4 @@ Closes #<!-- issue number -->
 - [ ] Tests pass (`python manage.py test`)
 - [ ] Tried it locally / on staging. **What a reviewer should click to see it:** <!-- e.g. open /login, sign in as member@example.com -->
 - [ ] No secrets (passwords, API keys) in the diff
-- [ ] One teammate approved (read the summary, tried it; no need to read code)
+- [ ] Reviewed before merging: an `Agent review:` comment from `/review-pr` says pass (or a teammate approved)

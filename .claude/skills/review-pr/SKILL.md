@@ -1,12 +1,18 @@
 ---
 name: review-pr
-description: Use when a teammate wants to review a pull request, e.g. "review PR 14", "walk me through the PR", or after /next suggests a review. Explains the PR in plain language, runs the tests, checks it against the issue's acceptance criteria and for secrets, and approves on GitHub only after the teammate says yes.
+description: Use when a teammate wants a pull request reviewed, including their own, e.g. "review PR 14", "walk me through the PR", or after /next suggests a review. Acts as the agent reviewer, explains the PR in plain language, runs the tests, checks it against the issue's acceptance criteria and for secrets, and posts the review on GitHub only after the teammate says yes.
 ---
 
-# /review-pr: help a non-technical teammate review a PR
+# /review-pr: the agent review of a PR
 
-The reviewer does not read code. Your job is to give them an honest summary so they can decide in about 5 minutes.
-The approval is theirs: it is posted from their GitHub account, and only after they say yes.
+Since Kyle's 2026-11-11 change (addendum in `docs/context/course-requirements.md`), **you are the reviewer**, and your
+review counts. Authors run this on their own PRs, so nobody waits for a teammate. That only works if the review is
+real: check everything below, and if something fails, say so and recommend changes. Never pass a PR to be nice.
+
+If you wrote this PR's code in this same session, say so and suggest running `/review-pr <n>` in a new session for a
+fresh look. Continue only if the teammate wants to.
+
+The review is posted from the teammate's GitHub account, only after they say yes.
 
 ## 1. Pick the PR
 
@@ -22,7 +28,8 @@ gh api "$R/pulls/<n>/files" --jq '.[] | {filename, status}'
 
 The linked issues are the `Closes #<n>` lines in the PR body.
 
-If the author is the reviewer, stop: GitHub doesn't allow approving your own PR. Suggest asking a teammate.
+If the author is the person running this, that's fine: it's an agent review. GitHub doesn't allow **Approve** on your own PR,
+so in step 4 post it as a comment review (`event=COMMENT`) instead.
 
 ## 2. Gather the facts
 
@@ -59,20 +66,23 @@ Risks:          none found / <plain-language risk>
 Try it yourself: <exact steps, e.g. "run the app, go to http://127.0.0.1:8000/jobs, log in as ...">
                  or on staging after merge.
 
-My suggestion: approve (or: ask for changes because ...)
+Verdict:        pass (or: changes needed because ...)
 ```
 
 Be honest. If something is missing or tests fail, say so plainly and suggest "request changes" with a short reason.
 
 ## 4. Act on their decision (only after an explicit yes)
 
-- **Approve:** `gh api -X POST $R/pulls/<n>/reviews -f event=APPROVE -f body="<1–2 lines in the reviewer's words, e.g. 'Tried it on staging, works. Reviewed with Claude Code.'>"`
+The review body always starts with `Agent review: pass` or `Agent review: changes needed`, then the report from step 3
+(criteria, tests, rule checks, risks), so graders can see the check was real.
+
+- **Pass:** `gh api -X POST $R/pulls/<n>/reviews -f event=<APPROVE, or COMMENT on your own PR> -f body="Agent review: pass ..."`
   Then ask whether to merge now: `gh api -X PUT $R/pulls/<n>/merge -f merge_method=merge`, then delete the branch with
   `gh api -X DELETE $R/git/refs/heads/<branch>`.
-- **Request changes:** same review call with `-f event=REQUEST_CHANGES -f body="<what's missing, plainly>"`.
-- **Comment only:** same review call with `-f event=COMMENT -f body="..."`.
+- **Changes needed:** same call with `event=REQUEST_CHANGES` (or `COMMENT` on your own PR) and `body="Agent review: changes needed ..."`.
+  Don't merge. Offer to fix it, then review again.
 - **If GitHub refuses** (this can happen in cloud sessions), give the reviewer the PR link and the clicks:
-  **Files changed** tab → **Review changes** (or **Submit review**) → pick **Approve** → **Submit review**;
+  **Files changed** tab → **Review changes** (or **Submit review**) → pick **Approve** (or **Comment** on your own PR), paste the review text → **Submit review**;
   then on the **Conversation** tab **Merge pull request** → **Confirm merge** → **Delete branch**.
 
 Afterwards always go back: `git switch main && git pull --ff-only`, and tell them where they are.

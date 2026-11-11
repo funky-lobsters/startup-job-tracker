@@ -1,6 +1,6 @@
 ---
 name: next
-description: Use automatically on the first message of every session (teammates may not know this command exists), and whenever a teammate asks "what's next", "what should I do", "next phase" or "anything waiting for me". Checks GitHub for PRs waiting for their review, their own PRs, open user stories and missing sprint items, then recommends one next step.
+description: Use automatically on the first message of every session (teammates may not know this command exists), and whenever a teammate asks "what's next", "what should I do", "next phase" or "anything waiting for me". Checks GitHub for their own PRs (unreviewed, approved, changes needed), teammates' unreviewed PRs, open user stories and missing sprint items, then recommends one next step.
 ---
 
 # /next: what should I work on?
@@ -32,11 +32,12 @@ gh api "$R/issues?state=open&labels=user%20story" --jq '.[] | select(.pull_reque
 gh api "$R/issues?state=open&assignee=$ME" --jq '.[] | select(.pull_request | not) | {number, title}'
 ```
 
-A PR counts as **approved** if its latest review from some teammate is `APPROVED`, and **changes requested** if the latest is `CHANGES_REQUESTED`.
+A PR counts as **approved** if its latest review is `APPROVED` or its body starts with `Agent review: pass`, and **changes requested** if the latest is `CHANGES_REQUESTED` or starts with `Agent review: changes needed`.
+(Agent reviews count; see the addendum in `docs/context/course-requirements.md`. Fetch bodies with `--jq '[.[] | {user: .user.login, state, body: .body[0:40]}]'`.)
 
 Sort into:
-1. **PRs waiting for my review**: open, not draft, author is not me, not approved. Oldest first.
-2. **My own PRs**: `APPROVED` → offer to merge. `CHANGES_REQUESTED` → offer to fix. Otherwise "waiting for a reviewer; post the link in the team chat."
+1. **Teammates' PRs with no review yet**: open, not draft, author is not me, not reviewed. Optional: anyone can review, but authors can also review their own.
+2. **My own PRs**: `APPROVED` → offer to merge. `CHANGES_REQUESTED` → offer to fix. Not reviewed yet → offer to run `/review-pr <n>` now (in a new session for a fresh look). Don't tell them to wait for a teammate.
 3. **My assigned issues** that have no open PR yet.
 4. **Unassigned user stories** that anyone can pick up.
 
@@ -53,16 +54,16 @@ Format (keep it under ~15 lines):
 ```
 Sprint 2 — due Wed Nov 18 (5 days left)
 
-Waiting for your review:   #14 Job feed page (by sara-k, 2 days old)
+Unreviewed (optional):     #14 Job feed page (by sara-k)
 Your PRs:                  #12 Save job to tracker: approved, ready to merge
 Your issues:               #9 Company profile page (no PR yet)
 Up for grabs:              #15 Import startups from CSV, #16 ...
 Missing for this sprint:   docs/mgt656/sprints/sprint-2.md
 
-Recommended next: review #14. Reviews unblock teammates. Want me to walk you through it?
+Recommended next: merge #12. Want me to do it?
 ```
 
-Priority for the recommendation: reviews waiting more than 1 day → merge my approved PRs → fix my PRs with requested changes → my assigned issues → a missing sprint item close to its deadline → pick up an unassigned story.
+Priority for the recommendation: merge my approved PRs → review my own unreviewed PRs → fix my PRs with requested changes → my assigned issues → a missing sprint item close to its deadline → pick up an unassigned story.
 
 ## 5. Acting on their answer
 
