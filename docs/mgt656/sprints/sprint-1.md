@@ -63,7 +63,7 @@ and a first backlog of user stories.
   ([PR #8](https://github.com/funky-lobsters/startup-job-tracker/pull/8)), and only then had the agent
   build the page ([PR #11](https://github.com/funky-lobsters/startup-job-tracker/pull/11)). It got it
   right the first time because the requirement was already written down.
-- **Letting the agent push back.** On the last day, one of us wanted to skip writing issues and go
+- **Letting the agent push back.** One of us wanted to skip writing issues and go
   straight to coding the user stories. The agent pointed out that the course requires the backlog as
   GitHub issues and that every PR must close one, and showed the exact line in the course text. We
   set up the project board and the issues first. We now check the course text together with the agent
