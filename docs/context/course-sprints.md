@@ -6,7 +6,7 @@ Companion to `course-requirements.md`. Sources:
 - https://www.656.mba/#/assignments/project-sprint-3
 - https://www.656.mba/#/assignments/project-sprint-4
 
-Full requirements, folder layout, and report format are in `course-requirements.md`. All deadlines are 11:59pm ET. Each sprint's report lives in the repo at `docs/mgt656/sprints/sprint-N.md` and must be on `main` by the deadline.
+Full requirements, folder layout, and report format are in Kyle's requirements repo (https://github.com/yale-mgt-656-fall-2026/project-requirements; see `course-requirements.md` for how to read it). If this file disagrees with Kyle's repo, Kyle's repo wins. All deadlines are 11:59pm ET. Each sprint's report lives in the repo at `docs/mgt656/sprints/sprint-N.md` and must be on `main` by the deadline.
 
 ## Sprint report format (every sprint, about half a page)
 
@@ -81,7 +81,7 @@ Graded on: what shipped, the report, and how you worked.
 
 Submit: repo URL, staging URL, production URL, notes.
 
-Final submission (Fri Dec 18) also needs `docs/mgt656/retrospective.md`. See `course-requirements.md`.
+Final submission (Fri Dec 18) also needs `docs/mgt656/retrospective.md`. See Kyle's requirements repo.
 
 ## Submission notes format (all sprints)
 

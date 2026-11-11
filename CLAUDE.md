@@ -24,18 +24,23 @@ Team: **funky-lobsters** (MGT 656 at Yale). Product: a startup/VC job tracker.
 
 ## Read these first, every time
 
-Before doing any work, read all three files in `docs/context/`. They are the **locked-in source of truth**:
+Before doing any work, read these. They are the **locked-in source of truth**:
 
-1. `docs/context/course-requirements.md`: course requirements, grading, A/B test page spec (the course's text, unchanged; plus a clearly marked "Addendum from class" the team added)
-2. `docs/context/course-sprints.md`: per-sprint "Done when" checklists and deadlines (from the course; don't change)
-3. `docs/context/product-idea.md`: **our locked-in product decisions** (what we build and for whom)
+1. **Kyle's course requirements repo (live, updated over time):** https://github.com/yale-mgt-656-fall-2026/project-requirements.
+   Fetch the latest every session (works on laptops and in cloud sessions; `gh api` can't read it from the cloud):
+   `curl -fsSL https://raw.githubusercontent.com/yale-mgt-656-fall-2026/project-requirements/main/README.md`
+   It holds the course requirements, grading, A/B test page spec, report formats and deadlines. **It wins over every file in this repo.**
+2. `docs/context/course-requirements.md`: how to read Kyle's repo, our team's facts (A/B page address), and the "Addendum from class" (traffic source tracking, not yet in Kyle's repo)
+3. `docs/context/course-sprints.md`: per-sprint "Done when" checklists (from the course site; don't change. If it disagrees with Kyle's repo, Kyle's repo wins)
+4. `docs/context/product-idea.md`: **our locked-in product decisions** (what we build and for whom)
 
-If a request conflicts with these files, point out the conflict and ask before proceeding.
+If a request conflicts with these, point out the conflict and ask before proceeding.
 
-**Three layers of docs:**
+**Four layers of docs:**
 
 | Layer | Where | What it means |
 |---|---|---|
+| Course rules | Kyle's [project-requirements](https://github.com/yale-mgt-656-fall-2026/project-requirements) repo | The course's requirements. Read live; we don't copy it. |
 | Locked in | `docs/context/` | Decided. Agents follow it. Only changed when the team explicitly agrees (ask first). |
 | Draft / shared memory | `docs/notes/` | Ideas and discussions not decided yet. Background only. See "Notes workflow" below. |
 | Graded | `docs/mgt656/` | Course deliverables. File names are fixed by the course; don't rename them. |
