@@ -69,6 +69,7 @@ INSTALLED_APPS = [
     "accounts",
     "core",
     "abtest",
+    "jobs",
 ]
 
 MIDDLEWARE = [

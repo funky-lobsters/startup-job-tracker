@@ -18,6 +18,8 @@ from django.contrib.auth import get_user_model
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
+from jobs.demo_data import load_demo_jobs
+
 GRADER_ACCOUNTS = [
     # (label, email env var, default email, password env var, is admin)
     ("admin", "GRADER_ADMIN_EMAIL", "admin@example.com", "GRADER_ADMIN_PASSWORD", True),
@@ -50,5 +52,8 @@ class Command(BaseCommand):
             user.save()
             self.stdout.write(f"{'Created' if created else 'Checked'} {label} account: {email}")
 
-        # Demo data (jobs, companies, ...) will be added here as those features are built.
+        # Demo data: fake companies and jobs for the /jobs/ page (never duplicated on re-runs).
+        companies_created, jobs_created = load_demo_jobs()
+        self.stdout.write(f"Demo data: {companies_created} companies and {jobs_created} jobs added.")
+
         self.stdout.write(self.style.SUCCESS("Seed complete."))

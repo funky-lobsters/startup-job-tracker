@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Jobs · Funky Lobsters{% endblock %}
+
+{% block content %}
+  <hgroup>
+    <h1>Startup jobs</h1>
+    <p>{{ jobs|length }} open role{{ jobs|length|pluralize }}, newest first.</p>
+  </hgroup>
+
+  {% if jobs %}
+    {# One card per job, so every detail and the Apply button fit on a phone screen. #}
+    {% for job in jobs %}
+      <article class="job">
+        <header>
+          <strong>{{ job.title }}</strong><br>
+          <small>{{ job.company.name }}</small>
+        </header>
+        <p>
+          {{ job.location }} · {{ job.get_role_type_display }} ·
+          <small>Posted <time datetime="{{ job.posted_date|date:'Y-m-d' }}">{{ job.posted_date|date:"M j, Y" }}</time></small>
+        </p>
+        <footer>
+          <a href="{{ job.apply_url }}" target="_blank" rel="noopener noreferrer" role="button">Apply</a>
+        </footer>
+      </article>
+    {% endfor %}
+  {% else %}
+    <article>
+      <p id="empty-state">No jobs yet.</p>
+    </article>
+  {% endif %}
+{% endblock %}
