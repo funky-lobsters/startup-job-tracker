@@ -26,17 +26,20 @@ Use only `gh api` (GitHub's REST API). It works both on laptops and in cloud ses
 ```bash
 R=repos/funky-lobsters/startup-job-tracker
 ME=$(gh api user --jq .login)                              # who am I
-gh api "$R/pulls?state=open" --jq '.[] | {number, title, author: .user.login, draft, created_at, branch: .head.ref}'
-gh api "$R/pulls/<n>/reviews" --jq '[.[] | {user: .user.login, state}]'     # for each open PR: its reviews
+gh api "$R/pulls?state=open" --jq '.[] | {number, title, author: .user.login, draft, created_at, branch: .head.ref, sha: .head.sha}'
+gh api "$R/pulls/<n>/reviews" --jq '[.[] | {user: .user.login, state, commit: .commit_id, body: (.body // "" | .[0:40])}]'   # for each open PR: its reviews
 gh api "$R/issues?state=open&labels=user%20story" --jq '.[] | select(.pull_request | not) | {number, title, assignees: [.assignees[].login]}'
 gh api "$R/issues?state=open&assignee=$ME" --jq '.[] | select(.pull_request | not) | {number, title}'
 ```
 
-A PR counts as **reviewed** if its latest review is `APPROVED`, or a `COMMENTED` review whose text starts with "Agent review: approve" (that's how an agent review is posted on your own PR). It counts as **changes requested** if the latest is `CHANGES_REQUESTED`.
+Look at the PR's **latest review that is `APPROVED`, `CHANGES_REQUESTED`, or `COMMENTED` with a body starting "Agent review:"** (on your own PR, `/review-pr` posts its verdict as a comment, because GitHub doesn't allow approving your own PR):
+- **reviewed**: it's `APPROVED` or starts with "Agent review: approve", **and** its `commit` equals the PR's current `sha`. If new commits were pushed after the review, the PR needs a fresh review.
+- **changes requested**: it's `CHANGES_REQUESTED` or starts with "Agent review: changes needed".
+- otherwise **not reviewed yet**.
 
 Sort into:
-1. **PRs waiting for a review**: open, not draft, not reviewed yet (mine or a teammate's). Oldest first. Offer `/review-pr <n>`.
-2. **My own PRs**: reviewed → offer to merge. `CHANGES_REQUESTED` → offer to fix. Not reviewed yet → offer `/review-pr <n>` (a separate agent reviews it, then asks).
+1. **PRs waiting for a review**: teammates' PRs that are open, not draft and not reviewed yet. Oldest first. Offer `/review-pr <n>`.
+2. **My own PRs**: reviewed → offer to merge. Changes requested → offer to fix. Not reviewed yet → offer `/review-pr <n>` (a separate agent reviews it, then asks).
 3. **My assigned issues** that have no open PR yet.
 4. **Unassigned user stories** that anyone can pick up.
 

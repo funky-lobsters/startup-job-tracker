@@ -136,7 +136,7 @@ mostly just talks to the agent.
 - **Every PR says `Closes #<issue>`** so the issue closes automatically when merged.
 - **Every PR is reviewed by a separate agent, and a human confirms before anything happens** (team decision 2026-11-16; Kyle said in class that agent review is OK. This replaces the "teammate review" wording in `docs/context/course-sprints.md`; see the addendum in `docs/context/course-requirements.md`):
   - The review is done by a **separate agent** that did not write the code (a fresh subagent started by the `review-pr` skill, `/review-pr 14`). It checks the tests, the issue's acceptance criteria, secrets and the team rules, and reports in plain language.
-  - **The agent never posts a review or merges on its own.** It shows its verdict and asks *"Post this review and merge?"*. Only after the human says yes in the conversation does it post the review and merge.
+  - **The agent never posts a review or merges on its own.** It shows its verdict and asks *"Post this review and merge?"*. Only after the person running `/review-pr` (who can be the author) says yes in the conversation does it post the review and merge. A PR that gets new commits after its review needs a fresh review.
   - Anyone can run it, including the PR's author. GitHub doesn't let you approve your own PR, so on your own PR the review is posted as a comment; on a teammate's PR it is posted as **Approve**.
   - GitHub blocks merging `main` until the automatic checks (`tests`, `secrets`) are green. No teammate approval is required, but a teammate review is always welcome.
   - Every PR description says in plain language what changed, how it was checked, and **what to click to see it working**.
