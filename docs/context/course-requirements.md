@@ -64,3 +64,18 @@ Open questions to confirm with Kyle (update this addendum when answered):
 2. What is the third source (besides the Law School and SOM)?
 3. Is it the same bot run as the A/B run after Sprint 4, or a separate one? When?
 4. Should the source be the host name (`law.yale.edu`) or a school label (`Law School`)?
+
+## Addendum from class: agent review instead of teammate review
+
+*Added by the team on 2026-11-16 (Benjamin) from what Kyle said in class. It is not in Kyle's requirements repo or on the course site yet.*
+
+- The course site (`course-sprints.md`) says every PR gets a **teammate review**. Kyle's requirements repo calls teammate review
+  "the very best practice" and allows a change to skip review with a short note. Kyle said in class that it's fine for our
+  **agents to do the review**.
+- **Our rule** (see CLAUDE.md, "Working rules"): every PR is reviewed by a **separate agent** that did not write the code
+  (`/review-pr`), and the **person running it (can be the author) confirms with a yes** before the review is posted and the PR merged. GitHub requires the
+  automatic checks (`tests`, `secrets`) to pass before merging; it no longer requires a teammate approval.
+- Each such PR's review says *"Reviewed by a separate agent, confirmed by <name>"*, which also covers Kyle's "leave a short note" rule.
+- PRs merged before 2026-11-16 (#37, #38, #40, #47) each have a real teammate approval, so Sprint 2's "teammate review" item is met.
+
+Open question: get Kyle's OK in writing (course GitHub Discussions) and update this addendum with the link.
