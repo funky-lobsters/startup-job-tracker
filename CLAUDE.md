@@ -57,7 +57,7 @@ core/                home page and general pages
 abtest/              A/B test page /26fd193, /26fd193/stats, traffic-source tracking (graded)
 accounts/management/commands/seed.py   `python manage.py seed`: grader accounts (passwords from env vars)
 templates/           HTML templates (base.html holds the shared layout, Pico CSS from CDN)
-render.yaml          Render deployment blueprint (staging)
+render.yaml          Render deployment blueprint (staging and production)
 requirements.txt     Python packages (pinned)
 .env.example         template for your local .env (never commit the real .env)
 docs/context/        LOCKED IN: course-requirements.md, course-sprints.md, product-idea.md
@@ -158,7 +158,9 @@ mostly just talks to the agent.
 - Login is by **email + password** (custom user model `accounts.User`). Log in page is `/login/`.
 - Local development uses a Neon Postgres "dev" database via `DATABASE_URL` in `.env`.
   Tests use a throwaway SQLite database by default (set `TEST_DATABASE_URL` to test against Postgres).
-- Staging runs on Render (free plan) with its own Neon database. Production comes in Sprint 2 with its own database.
+- Staging (https://funky-lobsters-staging.onrender.com) and production (https://funky-lobsters.onrender.com) run on Render (free plan),
+  each with its own Neon database. Staging updates on every merge to `main`; production only with **Manual Deploy** in Render.
+  Both have `OPENROUTER_API_KEY` set. Which key is in use and how to swap it: README.md, "Deploy".
 
 ## Common commands
 

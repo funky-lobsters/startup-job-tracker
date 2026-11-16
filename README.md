@@ -199,13 +199,29 @@ create a new key in that service (the old one stays in git history) and update i
 
 ## Deploy
 
-- **Staging** (Render, free plan) deploys automatically on every merge to `main`.
-  Config is in `render.yaml`; secrets (`DATABASE_URL`, `SECRET_KEY`) live only in the Render dashboard.
-  Migrations run automatically when the app starts.
+- **Staging** (Render, free plan): https://funky-lobsters-staging.onrender.com. Deploys automatically on every merge to `main`.
+  Config is in `render.yaml`; secrets (`DATABASE_URL`, `SECRET_KEY`, grader passwords, `OPENROUTER_API_KEY`) live only in the Render dashboard.
+  Migrations and the seed command run automatically when the app starts.
 - **Production** (Render, free plan): https://funky-lobsters.onrender.com, with its **own** Neon database
   (separate from staging). It does **not** update on merge. To promote what's on staging:
   Render dashboard → **funky-lobsters** → **Manual Deploy** → **Deploy latest commit**.
   Check staging first; production is what graders and the A/B bot see.
+- Free Render sites sleep after about 15 minutes without visitors. The first visit shows Render's "waking up"
+  screen for up to a minute or two; that's normal.
+
+**Current setup (updated 2026-11-16):**
+
+| | Staging | Production |
+|---|---|---|
+| Address | https://funky-lobsters-staging.onrender.com | https://funky-lobsters.onrender.com |
+| Database | its own Neon project (the older one) | its own, separate Neon project (created 2026-11-16) |
+| Updates | automatically on merge to `main` | only with **Manual Deploy** |
+| Grader accounts | `admin@example.com`, `member@example.com` | same emails and passwords as staging |
+| `OPENROUTER_API_KEY` | set | set |
+
+The OpenRouter key on both sites is currently **Benjamin's own key, with a spending limit**, added 2026-11-16 because the
+course key from Kyle hadn't arrived yet. When Kyle's key arrives: in Render, for **both** sites open **Environment** →
+**Edit**, replace the `OPENROUTER_API_KEY` value, click **Save, rebuild, and deploy**, and tell Benjamin so he can delete his key.
 
 Environment variables: `DATABASE_URL`, `SECRET_KEY`, `DEBUG`, optional `ALLOWED_HOSTS`,
 `CSRF_TRUSTED_ORIGINS`, `LOG_LEVEL`, and for the AI recommendations `OPENROUTER_API_KEY` (secret, Render dashboard only)

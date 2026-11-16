@@ -28,7 +28,7 @@ services:
       - key: GRADER_MEMBER_PASSWORD
         sync: false
       - key: OPENROUTER_API_KEY
-        sync: false           # Render asks you to paste the team's OpenRouter key (from Kyle)
+        sync: false           # set in the Render dashboard (see README, "Deploy": which key is in use)
       - key: OPENROUTER_MODEL
         value: openai/gpt-4o-mini
       - key: WEB_CONCURRENCY
