@@ -1,0 +1,38 @@
+# GitHub runs these checks automatically on every pull request and every push to main (#42).
+# - "tests": runs our Django tests (they use a throwaway SQLite database and never call the real AI).
+# - "secrets": runs Gitleaks, which looks for API keys or passwords committed by mistake.
+# A red X on a pull request means one of them failed; click "Details" next to it to see why.
+name: Checks
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Run Django tests
+        run: python manage.py test
+
+  secrets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # scan the whole history, not only the latest commit
+      - name: Scan for leaked secrets with Gitleaks
+        # Runs the official Gitleaks container directly (the gitleaks-action needs a paid licence for organizations).
+        run: |
+          docker run --rm -v "$PWD:/repo" ghcr.io/gitleaks/gitleaks:latest \
+            git /repo --config /repo/.gitleaks.toml --redact --verbose
