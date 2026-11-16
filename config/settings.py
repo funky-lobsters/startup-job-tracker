@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "core",
     "abtest",
     "jobs",
+    "profiles",
 ]
 
 MIDDLEWARE = [

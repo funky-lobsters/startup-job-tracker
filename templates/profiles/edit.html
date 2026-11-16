@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}My profile · Funky Lobsters{% endblock %}
+
+{% block content %}
+  <hgroup>
+    <h1>My profile</h1>
+    <p>Tell us about yourself so we can recommend startup jobs that fit. Only you can see this.</p>
+  </hgroup>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    {% for field in form %}
+      {% if field.name == "preferred_role_types" or field.name == "preferred_stages" %}
+        <fieldset>
+          <legend>{{ field.label }}</legend>
+          {% for checkbox in field %}
+            <label>{{ checkbox.tag }} {{ checkbox.choice_label }}</label>
+          {% endfor %}
+          {{ field.errors }}
+        </fieldset>
+      {% else %}
+        <label for="{{ field.id_for_label }}">
+          {{ field.label }}
+          {{ field }}
+          {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+          {{ field.errors }}
+        </label>
+      {% endif %}
+    {% endfor %}
+
+    <button type="submit">Save profile</button>
+  </form>
+{% endblock %}
