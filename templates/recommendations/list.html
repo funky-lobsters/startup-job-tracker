@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Recommended for you · Funky Lobsters{% endblock %}
+
+{% block content %}
+  <hgroup>
+    <h1>Recommended for you</h1>
+    <p>Up to 5 jobs our AI picked for your profile, with the reason for each.</p>
+  </hgroup>
+
+  {% if needs_profile %}
+    <article id="needs-profile">
+      <p>Fill in your profile first, so we know what you are looking for.</p>
+      <a href="{% url 'profiles:edit' %}" role="button">Fill in my profile</a>
+    </article>
+  {% elif no_jobs %}
+    <article id="no-jobs">
+      <p>No jobs yet. Check back once jobs have been added.</p>
+    </article>
+  {% elif ai_error %}
+    <article id="ai-error">
+      <p>Sorry, we couldn't get recommendations right now. Please try again in a minute,
+        or <a href="{% url 'jobs:list' %}">browse all jobs</a>.</p>
+    </article>
+  {% elif recommendations %}
+    {% for job, reason in recommendations %}
+      <article class="recommendation">
+        <header>
+          <strong>{{ job.title }}</strong><br>
+          <small>{{ job.company.name }} · {{ job.location }} · {{ job.get_role_type_display }}</small>
+        </header>
+        <p>{{ reason }}</p>
+        <footer>
+          <a href="{{ job.apply_url }}" target="_blank" rel="noopener noreferrer" role="button">View job</a>
+        </footer>
+      </article>
+    {% endfor %}
+    <p><small>Not quite right? <a href="{% url 'profiles:edit' %}">Update your profile</a> and come back.</small></p>
+  {% else %}
+    <article id="no-matches">
+      <p>The AI didn't find a good match among the current jobs.
+        <a href="{% url 'profiles:edit' %}">Update your profile</a> or <a href="{% url 'jobs:list' %}">browse all jobs</a>.</p>
+    </article>
+  {% endif %}
+{% endblock %}

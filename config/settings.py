@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     "abtest",
     "jobs",
     "profiles",
+    "recommendations",
 ]
 
 MIDDLEWARE = [
@@ -191,3 +192,13 @@ LOGGING = {
     },
     "root": {"handlers": ["console"], "level": os.environ.get("LOG_LEVEL", "INFO")},
 }
+
+
+# --- AI (OpenRouter) ---------------------------------------------------------------
+# Called only from the server (recommendations/ai.py). The key lives in an environment variable,
+# never in git. Without a key the recommendations page shows a friendly "try again later" message.
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "")
+if TESTING:
+    OPENROUTER_API_KEY = ""  # safety net: tests can never reach the real AI, even with a key in .env
+OPENROUTER_MODEL = os.environ.get("OPENROUTER_MODEL") or "openai/gpt-4o-mini"
+OPENROUTER_TIMEOUT_SECONDS = int(os.environ.get("OPENROUTER_TIMEOUT_SECONDS") or 25)
