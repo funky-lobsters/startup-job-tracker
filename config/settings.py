@@ -106,7 +106,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 
 
 # --- Database ---------------------------------------------------------------------
-# The app always uses Postgres via DATABASE_URL (Neon dev DB locally, Neon staging DB on Render).
+# The app always uses Postgres via DATABASE_URL (Neon dev DB locally; staging and production each have their own Neon DB on Render).
 # Tests use a throwaway SQLite database unless TEST_DATABASE_URL is set.
 
 if TESTING:
