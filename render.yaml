@@ -1,6 +1,9 @@
 # Render Blueprint: describes our hosting setup as code.
 # Render reads this file when you create a "Blueprint" from the GitHub repo.
-# Staging only for now. Production (with its own Neon database) is added in Sprint 2.
+# Two copies of the site, each with its OWN Neon database:
+#   - staging    (funky-lobsters-staging): updates itself on every merge to main, for testing.
+#   - production (funky-lobsters): what graders and users see. It does NOT update on merge; we promote
+#     on purpose with Render's "Manual Deploy" -> "Deploy latest commit" (see README, "Deploy").
 services:
   - type: web
     name: funky-lobsters-staging
@@ -30,3 +33,30 @@ services:
         value: openai/gpt-4o-mini
       - key: WEB_CONCURRENCY
         value: "2"            # number of gunicorn workers; fits the free plan's memory
+
+  - type: web
+    name: funky-lobsters      # production: https://funky-lobsters.onrender.com
+    runtime: python
+    plan: free
+    region: virginia
+    branch: main
+    autoDeploy: false         # promoting to production is a deliberate step (Manual Deploy in Render)
+    buildCommand: pip install -r requirements.txt && python manage.py collectstatic --no-input
+    startCommand: python manage.py migrate --no-input && python manage.py seed && gunicorn config.wsgi:application --bind 0.0.0.0:$PORT --access-logfile -
+    envVars:
+      - key: DEBUG
+        value: "false"
+      - key: SECRET_KEY
+        generateValue: true   # its own random secret, different from staging
+      - key: DATABASE_URL
+        sync: false           # paste the Neon PRODUCTION connection string (never the staging one)
+      - key: GRADER_ADMIN_PASSWORD
+        sync: false
+      - key: GRADER_MEMBER_PASSWORD
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: OPENROUTER_MODEL
+        value: openai/gpt-4o-mini
+      - key: WEB_CONCURRENCY
+        value: "2"
