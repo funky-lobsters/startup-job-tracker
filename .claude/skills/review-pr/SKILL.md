@@ -1,12 +1,16 @@
 ---
 name: review-pr
-description: Use when a teammate wants to review a pull request, e.g. "review PR 14", "walk me through the PR", or after /next suggests a review. Explains the PR in plain language, runs the tests, checks it against the issue's acceptance criteria and for secrets, and approves on GitHub only after the teammate says yes.
+description: Use when a teammate wants a pull request reviewed (their own or someone else's), e.g. "review PR 14", "walk me through the PR", or after /next suggests a review. A separate agent that did not write the code reviews it (tests, acceptance criteria, secrets, team rules) and reports in plain language. Nothing is posted and nothing is merged until the teammate says yes.
 ---
 
-# /review-pr: help a non-technical teammate review a PR
+# /review-pr: a separate agent reviews the PR, the teammate confirms
 
-The reviewer does not read code. Your job is to give them an honest summary so they can decide in about 5 minutes.
-The approval is theirs: it is posted from their GitHub account, and only after they say yes.
+Team rule (CLAUDE.md, "Working rules"): every PR is reviewed by a **separate agent** that did not write the code, and a
+**human confirms** before anything happens. The teammate doesn't read code; give them an honest summary so they can decide
+in a few minutes. **Never post a review or merge without an explicit yes in this conversation.**
+
+Anyone can run this, including the PR's author. No teammate approval is required by GitHub, but `main` only accepts a
+merge when the automatic checks (`tests`, `secrets`) are green.
 
 ## 1. Pick the PR
 
@@ -16,63 +20,75 @@ Use only `gh api` (GitHub's REST API): it works on laptops and in cloud sessions
 R=repos/funky-lobsters/startup-job-tracker
 gh api user --jq .login
 gh api "$R/pulls?state=open" --jq '.[] | {number, title, author: .user.login}'   # if no number was given: ask which one
-gh api "$R/pulls/<n>" --jq '{number, title, body, author: .user.login, branch: .head.ref, additions, deletions, url: .html_url}'
-gh api "$R/pulls/<n>/files" --jq '.[] | {filename, status}'
+gh api "$R/pulls/<n>" --jq '{number, title, author: .user.login, branch: .head.ref, sha: .head.sha, url: .html_url}'
 ```
 
-The linked issues are the `Closes #<n>` lines in the PR body.
+## 2. Hand the review to a separate agent
 
-If the author is the reviewer, stop: GitHub doesn't allow approving your own PR. Suggest asking a teammate.
+Start a **fresh subagent** (Agent tool, `general-purpose`) so the review isn't anchored on whoever wrote the code,
+including you in this session. Give it the PR number and this brief, and tell it explicitly: **read-only. Don't post,
+approve, comment, merge, push or change files; return the report as text.**
 
-## 2. Gather the facts
-
-1. Read the linked issue(s) (`gh api $R/issues/<issue> --jq '{title, body}'`), especially the **acceptance criteria**.
-2. Read the diff: `gh api $R/pulls/<n> -H "Accept: application/vnd.github.diff"`.
-3. Check the code out and run the tests:
+The subagent's brief:
+1. Read the PR (`gh api $R/pulls/<n>`), its diff (`gh api $R/pulls/<n> -H "Accept: application/vnd.github.diff"`) and
+   the linked issue(s) from the `Closes #<n>` lines (`gh api $R/issues/<issue> --jq '{title, body}'`), especially the
+   **acceptance criteria**.
+2. Read the live course requirements (`curl -fsSL https://raw.githubusercontent.com/yale-mgt-656-fall-2026/project-requirements/main/README.md`) and `CLAUDE.md`.
+3. Run the tests on the PR's code without disturbing the teammate's working copy:
    ```bash
-   git status --porcelain        # if not empty: ask before continuing (offer `git stash`)
-   git fetch -q origin <branch> && git switch --track origin/<branch>   # or `git switch <branch>` if it exists
-   bash scripts/cloud-setup.sh          # cloud sessions only; on a laptop: source .venv/bin/activate && pip install -q -r requirements.txt
+   git fetch -q origin <branch>
+   git worktree add -q ../review-<n> FETCH_HEAD && cd ../review-<n>
+   bash scripts/cloud-setup.sh          # cloud sessions; on a laptop: python3 -m venv .venv && .venv/bin/pip install -q -r requirements.txt
    .venv/bin/python manage.py test
+   cd - && git worktree remove --force ../review-<n>
    ```
-4. Check these rules from CLAUDE.md, quickly:
+4. Check the GitHub checks: `gh api $R/commits/<sha>/check-runs --jq '.check_runs[] | {name, conclusion}'`.
+5. Check the team rules:
    - no secrets in the diff (API keys, passwords, connection strings, `.env` files)
    - model changes come with a migration file
    - tests don't call OpenRouter or other external services for real (they're mocked)
    - the PR says `Closes #<issue>` and fills in "what the agent produced / what the team changed"
    - nothing unrelated to the story snuck in
+6. Return: a verdict (**approve** or **request changes**), each acceptance criterion ✅/⚠️/❌, test result, rule checks,
+   and only *verified* problems (not hunches), with why they matter.
 
-## 3. Report in plain language
+## 3. Report to the teammate in plain language
+
+Translate the subagent's report. No jargon; define any technical term you must use.
 
 ```
-PR #14 "Job feed page" by sara-k  (closes #9)
+PR #14 "Job feed page" by sara-k  (closes #9), reviewed by a separate agent
 
 What it does:   Adds a page at /jobs that lists startup jobs, newest first...
 Acceptance criteria:
   ✅ Logged-in users see a list of jobs
   ✅ Works on phone (uses the shared layout)
   ⚠️ "Filter by role": not included. The PR says it's a follow-up
-Tests:          ✅ 18 passed
+Tests:          ✅ 18 passed   GitHub checks: ✅ tests ✅ secrets
 Rule checks:    ✅ no secrets  ✅ migration included  ✅ external calls mocked
 Risks:          none found / <plain-language risk>
 
-Try it yourself: <exact steps, e.g. "run the app, go to http://127.0.0.1:8000/jobs, log in as ...">
-                 or on staging after merge.
+Try it yourself: on staging after merge: <exact clicks>
 
-My suggestion: approve (or: ask for changes because ...)
+Agent's verdict: approve (or: request changes because ...)
+Post this review and merge? (yes / post the review only / no)
 ```
 
-Be honest. If something is missing or tests fail, say so plainly and suggest "request changes" with a short reason.
+Be honest. If something is missing, a check is red or tests fail, say so plainly and suggest "request changes".
 
-## 4. Act on their decision (only after an explicit yes)
+## 4. Act only after an explicit yes
 
-- **Approve:** `gh api -X POST $R/pulls/<n>/reviews -f event=APPROVE -f body="<1–2 lines in the reviewer's words, e.g. 'Tried it on staging, works. Reviewed with Claude Code.'>"`
-  Then ask whether to merge now: `gh api -X PUT $R/pulls/<n>/merge -f merge_method=merge`, then delete the branch with
-  `gh api -X DELETE $R/git/refs/heads/<branch>`.
-- **Request changes:** same review call with `-f event=REQUEST_CHANGES -f body="<what's missing, plainly>"`.
-- **Comment only:** same review call with `-f event=COMMENT -f body="..."`.
-- **If GitHub refuses** (this can happen in cloud sessions), give the reviewer the PR link and the clicks:
-  **Files changed** tab → **Review changes** (or **Submit review**) → pick **Approve** → **Submit review**;
+The review body always starts with the verdict, so `/next` can recognise it, and mentions it was a separate agent.
+
+- **Approve:**
+  - On a teammate's PR: `gh api -X POST $R/pulls/<n>/reviews -f event=APPROVE -f body="Agent review: approve. <1–2 lines>. Reviewed by a separate agent, confirmed by <teammate>."`
+  - On your **own** PR (GitHub doesn't allow approving your own PR): same call with `-f event=COMMENT` and the same body.
+  - Then, only if they said yes to merging and the checks are green: `gh api -X PUT $R/pulls/<n>/merge -f merge_method=merge`,
+    then delete the branch with `gh api -X DELETE $R/git/refs/heads/<branch>`.
+- **Request changes:** on a teammate's PR `-f event=REQUEST_CHANGES`, on your own PR `-f event=COMMENT`; body starts with
+  `Agent review: changes needed.` and says plainly what's missing. Then offer to fix it.
+- **If GitHub refuses** (this can happen in cloud sessions, e.g. deleting a branch), give the teammate the PR link and the clicks:
+  **Files changed** tab → **Review changes** (or **Submit review**) → pick **Approve** or **Comment** → **Submit review**;
   then on the **Conversation** tab **Merge pull request** → **Confirm merge** → **Delete branch**.
 
-Afterwards always go back: `git switch main && git pull --ff-only`, and tell them where they are.
+Afterwards tell them where they are, then run `git switch main && git pull --ff-only` (or, if they're on a work branch, just `git fetch`).

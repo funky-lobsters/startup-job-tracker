@@ -58,8 +58,9 @@ GitHub project. Claude makes the changes there, then sends them back to GitHub a
    time), then tells you what's waiting for you: PRs to review, your issues, and what's missing for this sprint.
 3. Work on **one story per session**: say which issue to work on (e.g. "work on issue #14"). Claude builds it, runs the
    tests, and opens a PR that says `Closes #14`. If you see a **Create PR** button instead, click it.
-4. Post the PR link in the team chat. One teammate reviews it with **`/review-pr 14`**. After it's merged, staging updates
-   on its own, and the PR says what to click there to see your change.
+4. Type **`/review-pr 14`**. A separate agent (not the one that wrote the code) reviews the PR and tells you its verdict.
+   Nothing is posted or merged until you say yes. After the merge, staging updates on its own, and the PR says what to
+   click there to see your change. Post the PR link in the team chat so everyone knows.
 
 **Good to know**
 - You **can't open the app running inside the cloud computer**. Claude shows it works through automated tests, and
@@ -69,11 +70,11 @@ GitHub project. Claude makes the changes there, then sends them back to GitHub a
 
 ## Day to day in Claude Code
 
-- Type **`/next`** (or "what's next?"). Claude checks GitHub and tells you which PRs are waiting for your review,
+- Type **`/next`** (or "what's next?"). Claude checks GitHub and tells you which PRs are waiting for a review,
   the state of your own PRs, issues to pick up, and what's missing for this sprint. It recommends one step.
-- Type **`/review-pr 14`** to review PR #14. Claude explains it in plain language, runs the tests, checks it against
-  the issue, and posts your approval only after you say yes. If GitHub refuses the approval from the cloud, Claude
-  tells you which buttons to click on GitHub instead.
+- Type **`/review-pr 14`** to review PR #14 (yours or a teammate's). A separate agent reviews it: it explains the PR in
+  plain language, runs the tests and checks it against the issue. Then it asks you; it posts the review and merges only
+  after you say yes. If GitHub refuses from the cloud, Claude tells you which buttons to click on GitHub instead.
 
 ## Working on your own laptop (optional, more setup)
 
@@ -209,4 +210,4 @@ and optional `OPENROUTER_MODEL` (default `openai/gpt-4o-mini`). Render's own hos
 
 ## How we work
 
-Branch per story → PR with `Closes #<issue>` → **one** teammate approves (via `/review-pr`, ~5 minutes) → merge → staging redeploys. See [CLAUDE.md](CLAUDE.md).
+Branch per story → PR with `Closes #<issue>` → automatic checks go green → a separate agent reviews it (`/review-pr`) and you say yes → merge → staging redeploys. See [CLAUDE.md](CLAUDE.md).

@@ -1,6 +1,6 @@
 ---
 name: next
-description: Use automatically on the first message of every session (teammates may not know this command exists), and whenever a teammate asks "what's next", "what should I do", "next phase" or "anything waiting for me". Checks GitHub for PRs waiting for their review, their own PRs, open user stories and missing sprint items, then recommends one next step.
+description: Use automatically on the first message of every session (teammates may not know this command exists), and whenever a teammate asks "what's next", "what should I do", "next phase" or "anything waiting for me". Checks GitHub for PRs waiting for a review (done by a separate agent, confirmed by the teammate), their own PRs, open user stories and missing sprint items, then recommends one next step.
 ---
 
 # /next: what should I work on?
@@ -32,11 +32,11 @@ gh api "$R/issues?state=open&labels=user%20story" --jq '.[] | select(.pull_reque
 gh api "$R/issues?state=open&assignee=$ME" --jq '.[] | select(.pull_request | not) | {number, title}'
 ```
 
-A PR counts as **approved** if its latest review from some teammate is `APPROVED`, and **changes requested** if the latest is `CHANGES_REQUESTED`.
+A PR counts as **reviewed** if its latest review is `APPROVED`, or a `COMMENTED` review whose text starts with "Agent review: approve" (that's how an agent review is posted on your own PR). It counts as **changes requested** if the latest is `CHANGES_REQUESTED`.
 
 Sort into:
-1. **PRs waiting for my review**: open, not draft, author is not me, not approved. Oldest first.
-2. **My own PRs**: `APPROVED` → offer to merge. `CHANGES_REQUESTED` → offer to fix. Otherwise "waiting for a reviewer; post the link in the team chat."
+1. **PRs waiting for a review**: open, not draft, not reviewed yet (mine or a teammate's). Oldest first. Offer `/review-pr <n>`.
+2. **My own PRs**: reviewed → offer to merge. `CHANGES_REQUESTED` → offer to fix. Not reviewed yet → offer `/review-pr <n>` (a separate agent reviews it, then asks).
 3. **My assigned issues** that have no open PR yet.
 4. **Unassigned user stories** that anyone can pick up.
 
@@ -53,21 +53,21 @@ Format (keep it under ~15 lines):
 ```
 Sprint 2 — due Wed Nov 18 (5 days left)
 
-Waiting for your review:   #14 Job feed page (by sara-k, 2 days old)
-Your PRs:                  #12 Save job to tracker: approved, ready to merge
+Waiting for a review:      #14 Job feed page (by sara-k, 2 days old)
+Your PRs:                  #12 Save job to tracker: reviewed, ready to merge
 Your issues:               #9 Company profile page (no PR yet)
 Up for grabs:              #15 Import startups from CSV, #16 ...
 Missing for this sprint:   docs/mgt656/sprints/sprint-2.md
 
-Recommended next: review #14. Reviews unblock teammates. Want me to walk you through it?
+Recommended next: review #14. Reviews unblock work. Want me to start the agent review?
 ```
 
-Priority for the recommendation: reviews waiting more than 1 day → merge my approved PRs → fix my PRs with requested changes → my assigned issues → a missing sprint item close to its deadline → pick up an unassigned story.
+Priority for the recommendation: PRs waiting for a review → merge my reviewed PRs → fix my PRs with requested changes → my assigned issues → a missing sprint item close to its deadline → pick up an unassigned story.
 
 ## 5. Acting on their answer
 
 - **Review a PR** → follow the `review-pr` skill.
-- **Merge my approved PR** → `gh api -X PUT $R/pulls/<n>/merge -f merge_method=merge`, then delete its branch with
+- **Merge my reviewed PR** (checks must be green) → `gh api -X PUT $R/pulls/<n>/merge -f merge_method=merge`, then delete its branch with
   `gh api -X DELETE $R/git/refs/heads/<branch>`, then `git switch main && git pull --ff-only`.
   If the cloud refuses the merge, give the teammate the PR link and tell them to click **Merge pull request** → **Confirm merge**.
 - **Start an issue** → `gh api -X POST $R/issues/<n>/assignees -f "assignees[]=$ME"`; `git switch main && git pull --ff-only`;
