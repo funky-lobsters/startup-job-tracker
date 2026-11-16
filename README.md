@@ -191,7 +191,8 @@ Tests must never call OpenRouter or other external services: mock them.
 - **Production**: added in Sprint 2, with its own Neon database.
 
 Environment variables: `DATABASE_URL`, `SECRET_KEY`, `DEBUG`, optional `ALLOWED_HOSTS`,
-`CSRF_TRUSTED_ORIGINS`, `LOG_LEVEL`. Render's own hostname is allowed automatically.
+`CSRF_TRUSTED_ORIGINS`, `LOG_LEVEL`, and for the AI recommendations `OPENROUTER_API_KEY` (secret, Render dashboard only)
+and optional `OPENROUTER_MODEL` (default `openai/gpt-4o-mini`). Render's own hostname is allowed automatically.
 
 ## How we work
 

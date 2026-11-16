@@ -24,5 +24,9 @@ services:
         sync: false           # Render asks you for it; also goes in the submission notes
       - key: GRADER_MEMBER_PASSWORD
         sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false           # Render asks you to paste the team's OpenRouter key (from Kyle)
+      - key: OPENROUTER_MODEL
+        value: openai/gpt-4o-mini
       - key: WEB_CONCURRENCY
         value: "2"            # number of gunicorn workers; fits the free plan's memory
