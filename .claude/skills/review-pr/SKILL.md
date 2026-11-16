@@ -41,11 +41,11 @@ The subagent's brief:
    REPO=$(git rev-parse --show-toplevel); W="$REPO/../review-<n>"
    git -C "$REPO" worktree remove --force "$W" 2>/dev/null
    git -C "$REPO" fetch -q origin <branch> && git -C "$REPO" worktree add -q "$W" FETCH_HEAD \
-     && (cd "$W" && bash scripts/cloud-setup.sh >/dev/null && .venv/bin/python manage.py test 2>&1 | tail -5)
+     && (cd "$W" && bash scripts/cloud-setup.sh >/dev/null; [ -x .venv/bin/python ] || { python3 -m venv .venv && .venv/bin/pip install -q -r requirements.txt; }; .venv/bin/python manage.py test 2>&1 | tail -5)
    git -C "$REPO" worktree remove --force "$W"
    ```
-   (`scripts/cloud-setup.sh` creates `.venv` and a local `.env` without real secrets. On a laptop without it:
-   `python3 -m venv .venv && .venv/bin/pip install -q -r requirements.txt`.)
+   (In cloud sessions `scripts/cloud-setup.sh` creates `.venv` and a local `.env` without real secrets; on a laptop the
+   command creates `.venv` itself.)
 4. Check the GitHub checks: `gh api $R/commits/<sha>/check-runs --jq '.check_runs[] | {name, conclusion}'`.
 5. Check the team rules:
    - no secrets in the diff (API keys, passwords, connection strings, `.env` files)

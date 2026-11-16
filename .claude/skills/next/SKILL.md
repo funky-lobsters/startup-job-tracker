@@ -34,7 +34,7 @@ gh api "$R/issues?state=open&assignee=$ME" --jq '.[] | select(.pull_request | no
 
 Look at the PR's **latest review that is `APPROVED`, `CHANGES_REQUESTED`, or `COMMENTED` with a body starting "Agent review:"** (on your own PR, `/review-pr` posts its verdict as a comment, because GitHub doesn't allow approving your own PR):
 - **reviewed**: it's `APPROVED` or starts with "Agent review: approve", **and** its `commit` equals the PR's current `sha`. If new commits were pushed after the review, the PR needs a fresh review.
-- **changes requested**: it's `CHANGES_REQUESTED` or starts with "Agent review: changes needed".
+- **changes requested**: it's `CHANGES_REQUESTED` or starts with "Agent review: changes needed", **and** its `commit` equals the PR's current `sha`. If fixes were pushed after it, the PR counts as not reviewed yet.
 - otherwise **not reviewed yet**.
 
 Sort into:
