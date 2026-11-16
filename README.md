@@ -20,7 +20,7 @@ founders find candidates. Built with Django + Postgres, hosted on Render + Neon.
 | `docs/context/` | **Locked in**: course requirements, sprint checklists, our product decisions |
 | `docs/notes/` | **Drafts**: shared team memory, meeting notes, brainstorming |
 | `docs/mgt656/` | **Graded** course docs (team.yaml, sprint reports, technical.md); names fixed |
-| `render.yaml` | Render hosting setup (staging) |
+| `render.yaml` | Render hosting setup (staging and production) |
 | `.env.example` | Template for your local `.env` secrets file |
 | `scripts/cloud-setup.sh` | Installs the Python packages at the start of a cloud session (Claude runs it) |
 
@@ -167,7 +167,7 @@ python manage.py seed
 ```
 
 Creates or updates `admin@example.com` and `member@example.com` with the passwords in
-`GRADER_ADMIN_PASSWORD` / `GRADER_MEMBER_PASSWORD` (from `.env` locally, Render settings on staging).
+`GRADER_ADMIN_PASSWORD` / `GRADER_MEMBER_PASSWORD` (from `.env` locally, Render settings on staging and production).
 Safe to run any number of times. Render runs it automatically on every start.
 
 ## Run the tests
@@ -201,7 +201,10 @@ create a new key in that service (the old one stays in git history) and update i
 - **Staging** (Render, free plan) deploys automatically on every merge to `main`.
   Config is in `render.yaml`; secrets (`DATABASE_URL`, `SECRET_KEY`) live only in the Render dashboard.
   Migrations run automatically when the app starts.
-- **Production**: added in Sprint 2, with its own Neon database.
+- **Production** (Render, free plan): https://funky-lobsters.onrender.com, with its **own** Neon database
+  (separate from staging). It does **not** update on merge. To promote what's on staging:
+  Render dashboard → **funky-lobsters** → **Manual Deploy** → **Deploy latest commit**.
+  Check staging first; production is what graders and the A/B bot see.
 
 Environment variables: `DATABASE_URL`, `SECRET_KEY`, `DEBUG`, optional `ALLOWED_HOSTS`,
 `CSRF_TRUSTED_ORIGINS`, `LOG_LEVEL`, and for the AI recommendations `OPENROUTER_API_KEY` (secret, Render dashboard only)
