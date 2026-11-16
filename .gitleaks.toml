@@ -1,0 +1,14 @@
+# Gitleaks settings (used by .github/workflows/checks.yml, #42).
+# Uses Gitleaks' standard rules, but ignores files that only hold FAKE example values on purpose.
+# Never add a real key here; if Gitleaks finds a real one, rotate the key (it stays in git history).
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Fake example values in the env template and in tests"
+paths = [
+  '''(^|/)\.env\.example$''',
+  '''(^|/)tests\.py$''',
+  '''(^|/)test_[^/]*\.py$''',
+]

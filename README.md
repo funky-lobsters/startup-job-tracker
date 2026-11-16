@@ -183,6 +183,19 @@ Tests use a throwaway SQLite database (no internet needed, no clash between team
 To run them against Postgres instead, set `TEST_DATABASE_URL` in `.env`.
 Tests must never call OpenRouter or other external services: mock them.
 
+## Automatic checks on GitHub
+
+Every pull request (and every merge to `main`) runs two checks on GitHub, defined in
+`.github/workflows/checks.yml`:
+
+- **tests**: runs `python manage.py test`.
+- **secrets**: runs [Gitleaks](https://github.com/gitleaks/gitleaks), which looks for API keys or passwords
+  committed by mistake. Fake example values in `.env.example` and test files are ignored (see `.gitleaks.toml`).
+
+A green check on the pull request means both passed. A red X means one failed: click **Details** next to it to
+see why, then ask Claude Code to fix it on the same branch. If Gitleaks finds a **real** key, don't just delete it:
+create a new key in that service (the old one stays in git history) and update it in Render.
+
 ## Deploy
 
 - **Staging** (Render, free plan) deploys automatically on every merge to `main`.
