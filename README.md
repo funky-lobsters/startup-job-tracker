@@ -185,7 +185,9 @@ points to. On your laptop that is the Neon **dev** database, so run it there fir
   so rename Crunchbase's headers (e.g. "Organization Name" → `name`) before importing.
 - **Matching:** companies are matched by website (`https://www.acme.com/` and `acme.com` count as the same),
   so running the same file twice creates no duplicates. A blank cell never erases what we already have.
-- **Skipped rows:** rows with no name, no website, or a name already used by a different company are skipped.
+- **Websites** must be web addresses: `acme.com` is saved as `https://acme.com`, but anything that isn't
+  `http://` or `https://` (e.g. `ftp://...`, `javascript:...`) is skipped, because websites are shown as clickable links.
+- **Skipped rows:** rows with no name, no website, a bad website, or a name already used by a different company are skipped.
   At the end it prints a summary like `Imported 40, updated 3, unchanged 0, skipped 2.` and why each row was skipped.
 - **Stage:** "Pre-seed"/"Angel", "Seed", "Series A" and "Series B", "Series C"... ("Series B+") are understood;
   anything else is left blank.

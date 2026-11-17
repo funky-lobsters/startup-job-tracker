@@ -9,6 +9,8 @@ How each row is handled:
   company. A match is updated; anything else creates a new company. Running the same file twice
   creates no duplicates.
 - A blank cell never wipes out information we already have (it just leaves that field as it was).
+- Websites must be web addresses (http:// or https://), because they are shown as clickable links.
+  "acme.com" is saved as "https://acme.com"; anything else ("javascript:...", "ftp://...", junk) is skipped.
 - Rows with no name or no website are skipped. So is a row whose website is new but whose name already
   belongs to a different company (company names must be unique in our database).
 - Stage accepts our labels ("Series A"), our codes ("series_a") and common Crunchbase wording
@@ -24,6 +26,7 @@ import re
 from urllib.parse import urlsplit
 
 from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -53,11 +56,25 @@ def normalise_website(url):
     return host + parts.path.rstrip("/")
 
 
+# Something that looks like "scheme:" at the start ("javascript:", "mailto:", "ftp:"), but not "acme.com:8080".
+HAS_SCHEME = re.compile(r"^[a-z][a-z0-9+.\-]*:(?!\d)", re.IGNORECASE)
+# Websites are shown as clickable links, so only real web addresses are allowed (never javascript:, ftp:, ...).
+WEB_ADDRESS = URLValidator(schemes=["http", "https"])
+
+
 def clean_website(url):
-    """The website as we store it: trimmed, with https:// added if the file left the scheme out."""
+    """The website as we store it, or None if it is not an http(s) web address.
+
+    "acme.com" (no scheme) becomes "https://acme.com". Anything with another scheme, or that still isn't a
+    valid web address, returns None so the row is skipped.
+    """
     url = url.strip()
-    if "://" not in url:
+    if not HAS_SCHEME.match(url):
         url = "https://" + url
+    try:
+        WEB_ADDRESS(url)
+    except ValidationError:
+        return None
     return url
 
 
@@ -149,6 +166,13 @@ class Command(BaseCommand):
             if not website:
                 skipped.append(f"Skipped row {row_number} ({name}): no website.")
                 continue
+            web_address = clean_website(website)
+            if web_address is None:
+                skipped.append(
+                    f"Skipped row {row_number} ({name}): website '{website}' is not a web address "
+                    "(it must look like acme.com or start with http:// or https://)."
+                )
+                continue
 
             raw_stage = values.get("stage", "")
             stage = parse_stage(raw_stage)
@@ -173,7 +197,7 @@ class Command(BaseCommand):
                 "description": values.get("description", ""),
                 "location": values.get("location", ""),
                 "stage": stage,
-                "website": clean_website(website),
+                "website": web_address,
             }
             if created:
                 company = Company()

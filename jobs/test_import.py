@@ -106,10 +106,48 @@ class ImportCompaniesTests(TestCase):
         self.assertEqual(Company.objects.get(website="https://acme.example.com").name, "Acme Fake")
         self.assertIn("Skipped row 2 (Beta Fake): this website belongs to 'Acme Fake'", output)
 
-    def test_skips_invalid_website(self):
-        output = self.run_import(HEADER + "Bad Fake,not a website,,,\n")
+    def test_skips_websites_that_are_not_http_or_https(self):
+        bad = [
+            "javascript:alert(1)",
+            "JavaScript:alert(document.cookie)",
+            "ftp://files.example.com",
+            "mailto:founder@example.com",
+            "data:text/html,hello",
+            "not a website",
+            "https://",
+        ]
+        rows = "".join(f'Bad Fake {i},"{url}",,,\n' for i, url in enumerate(bad))
+        output = self.run_import(HEADER + rows)
         self.assertFalse(Company.objects.exists())
-        self.assertIn("Skipped row 2 (Bad Fake): website:", output)
+        self.assertIn(f"skipped {len(bad)}.", output)
+        self.assertIn("Skipped row 2 (Bad Fake 0): website 'javascript:alert(1)' is not a web address", output)
+        self.assertIn("Skipped row 4 (Bad Fake 2): website 'ftp://files.example.com' is not a web address", output)
+
+    def test_bad_website_never_overwrites_or_matches_existing_company(self):
+        Company.objects.create(name="Acme Fake", website="https://acme.example.com")
+        output = self.run_import(HEADER + "Acme Fake,javascript://acme.example.com,,,\n")
+        self.assertEqual(Company.objects.get().website, "https://acme.example.com")
+        self.assertIn("skipped 1.", output)
+
+    def test_accepts_http_https_and_bare_addresses(self):
+        self.run_import(
+            HEADER
+            + "One Fake,http://one.example.com,,,\n"
+            + "Two Fake,HTTPS://Two.Example.com/about,,,\n"
+            + "Three Fake,three.example.com,,,\n"
+            + "Four Fake,four.example.com:8080,,,\n"
+        )
+        self.assertEqual(
+            dict(Company.objects.values_list("name", "website")),
+            {
+                "One Fake": "http://one.example.com",
+                "Two Fake": "HTTPS://Two.Example.com/about",
+                "Three Fake": "https://three.example.com",
+                "Four Fake": "https://four.example.com:8080",
+            },
+        )
+        for company in Company.objects.all():
+            self.assertTrue(company.website.lower().startswith(("http://", "https://")), company.website)
 
     def test_ignores_completely_blank_lines(self):
         output = self.run_import(HEADER + "Acme Fake,https://acme.example.com,,,\n,,,,\n")
