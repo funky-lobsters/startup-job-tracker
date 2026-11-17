@@ -13,7 +13,7 @@
     {% for job in jobs %}
       <article class="job">
         <header>
-          <strong>{{ job.title }}</strong><br>
+          <strong><a href="{% url 'jobs:detail' job.pk %}">{{ job.title }}</a></strong><br>
           <small>{{ job.company.name }}</small>
         </header>
         <p>

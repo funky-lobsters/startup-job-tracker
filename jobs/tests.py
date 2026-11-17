@@ -66,6 +66,12 @@ class JobListTests(TestCase):
             html=True,
         )
 
+    def test_each_job_title_links_to_its_detail_page(self):
+        job = make_job("Founding Product Manager")
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertContains(response, f'<a href="/jobs/{job.pk}/">Founding Product Manager</a>', html=True)
+
     def test_empty_state(self):
         self.client.force_login(self.user)
         response = self.client.get(self.url)
@@ -82,6 +88,88 @@ class JobListTests(TestCase):
             make_job(f"Role {i}", company=f"Company {i}")
         self.client.force_login(self.user)
         # Session + user + one jobs query that also loads companies (no extra query per job).
+        with self.assertNumQueries(3):
+            self.client.get(self.url)
+
+
+class JobDetailTests(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(email="seeker@example.com", password=PASSWORD)
+        self.job = make_job(
+            "Founding Product Manager",
+            location="Remote",
+            role_type=Job.RoleType.PRODUCT,
+            posted=date(2026, 11, 10),
+            apply_url="https://lanternfish-labs.example.com/careers/pm",
+        )
+        self.url = reverse("jobs:detail", args=[self.job.pk])
+
+    def test_url_is_jobs_slash_id(self):
+        self.assertEqual(self.url, f"/jobs/{self.job.pk}/")
+
+    def test_logged_out_visitor_is_sent_to_login(self):
+        response = self.client.get(self.url)
+        self.assertRedirects(response, f"{reverse('login')}?next=/jobs/{self.job.pk}/")
+
+    def test_shows_every_detail_of_the_job(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<h1>Founding Product Manager</h1>", html=True)
+        for text in ["Lanternfish Labs", "Remote", "Product", "Seed", "Nov 10, 2026"]:
+            self.assertContains(response, text)
+
+    def test_company_name_is_plain_text_until_company_pages_exist(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertContains(response, '<p class="company-name">Lanternfish Labs</p>', html=True)
+
+    def test_company_description_and_website_shown_when_present(self):
+        Company.objects.filter(pk=self.job.company_id).update(
+            description="We build tools for fishing fleets.", website="https://lanternfish-labs.example.com",
+        )
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertContains(response, "We build tools for fishing fleets.")
+        self.assertContains(
+            response,
+            '<a href="https://lanternfish-labs.example.com" target="_blank" rel="noopener noreferrer">Company website</a>',
+            html=True,
+        )
+
+    def test_company_section_hidden_when_no_description_or_website(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertNotContains(response, "About Lanternfish Labs")
+
+    def test_missing_company_stage_says_not_listed(self):
+        Company.objects.filter(pk=self.job.company_id).update(stage="")
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertContains(response, "Not listed")
+
+    def test_apply_button_opens_original_posting_in_new_tab(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertContains(
+            response,
+            '<a href="https://lanternfish-labs.example.com/careers/pm" target="_blank" rel="noopener noreferrer" role="button">Apply</a>',
+            html=True,
+        )
+
+    def test_unknown_job_shows_not_found(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("jobs:detail", args=[self.job.pk + 999]))
+        self.assertEqual(response.status_code, 404)
+
+    def test_page_has_link_back_to_all_jobs(self):
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+        self.assertContains(response, f'href="{reverse("jobs:list")}"')
+
+    def test_detail_uses_a_fixed_number_of_queries(self):
+        self.client.force_login(self.user)
+        # Session + user + one query for the job and its company.
         with self.assertNumQueries(3):
             self.client.get(self.url)
 

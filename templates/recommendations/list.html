@@ -26,12 +26,12 @@
     {% for job, reason in recommendations %}
       <article class="recommendation">
         <header>
-          <strong>{{ job.title }}</strong><br>
+          <strong><a href="{% url 'jobs:detail' job.pk %}">{{ job.title }}</a></strong><br>
           <small>{{ job.company.name }} · {{ job.location }} · {{ job.get_role_type_display }}</small>
         </header>
         <p>{{ reason }}</p>
         <footer>
-          <a href="{{ job.apply_url }}" target="_blank" rel="noopener noreferrer" role="button">View job</a>
+          <a href="{{ job.apply_url }}" target="_blank" rel="noopener noreferrer" role="button">Apply</a>
         </footer>
       </article>
     {% endfor %}
