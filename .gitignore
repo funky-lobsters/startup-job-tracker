@@ -22,3 +22,7 @@ db.sqlite3
 .coverage
 htmlcov/
 .claude/settings.local.json
+
+# Data exports (e.g. Crunchbase): never commit real data. Only the fake sample files are allowed.
+*.csv
+!jobs/sample_data/*.csv

@@ -1,0 +1,9 @@
+name,website,description,location,stage
+Pinecone Pickle Co (FAKE),https://www.pinecone-pickle.example.com/,Made-up startup for testing: subscription pickles.,"New Haven, CT",Seed
+Gizmo Otter Analytics (FAKE),http://gizmo-otter.example.com,Made-up startup for testing: dashboards for otter sanctuaries.,"Boston, MA",Series A
+Velvet Anvil Robotics (FAKE),velvet-anvil.example.com,Made-up startup for testing: robots that iron shirts.,"Pittsburgh, PA",Series C
+Moonbeam Ledger (FAKE),https://moonbeam-ledger.example.org,"Made-up startup for testing: accounting, but for moon colonies.",Remote,Pre-Seed
+Lark & Lantern Health (FAKE),https://lark-lantern.example.net/,Made-up startup for testing: appointment reminders by carrier pigeon.,"New York, NY",Angel
+Bubblewrap Bank (FAKE),https://bubblewrap-bank.example.com,Made-up startup for testing: very cautious lending.,"Austin, TX",Debt Financing
+Nameless Website Co (FAKE),,Made-up row with no website: the import skips it on purpose.,Remote,Seed
+,https://no-name.example.com,Made-up row with no name: the import skips it on purpose.,Remote,Seed
