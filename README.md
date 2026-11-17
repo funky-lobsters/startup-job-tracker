@@ -171,6 +171,28 @@ Creates or updates `admin@example.com` and `member@example.com` with the passwor
 `GRADER_ADMIN_PASSWORD` / `GRADER_MEMBER_PASSWORD` (from `.env` locally, Render settings on staging and production).
 Safe to run any number of times. Render runs it automatically on every start.
 
+## Importing companies
+
+```bash
+python manage.py import_companies path/to/companies.csv
+```
+
+Loads startups from a CSV file (for example a Crunchbase export) into whichever database `DATABASE_URL`
+points to. On your laptop that is the Neon **dev** database, so run it there first and check the result.
+
+- **Columns:** the first row must name the columns. `name` and `website` are required; `description`,
+  `location` and `stage` are optional. Capitals and extra spaces don't matter, and other columns are ignored,
+  so rename Crunchbase's headers (e.g. "Organization Name" → `name`) before importing.
+- **Matching:** companies are matched by website (`https://www.acme.com/` and `acme.com` count as the same),
+  so running the same file twice creates no duplicates. A blank cell never erases what we already have.
+- **Skipped rows:** rows with no name, no website, or a name already used by a different company are skipped.
+  At the end it prints a summary like `Imported 40, updated 3, unchanged 0, skipped 2.` and why each row was skipped.
+- **Stage:** "Pre-seed"/"Angel", "Seed", "Series A" and "Series B", "Series C"... ("Series B+") are understood;
+  anything else is left blank.
+- **Try it safely:** `jobs/sample_data/companies_sample.csv` holds made-up companies.
+- **Never commit real Crunchbase exports to git.** Keep them outside this folder (e.g. in Downloads) and
+  pass the full path (git is also set to ignore `.csv` files outside `jobs/sample_data/`). Importing into staging or production is a separate step the team agrees on first.
+
 ## Run the tests
 
 ```bash
