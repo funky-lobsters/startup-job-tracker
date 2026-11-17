@@ -119,10 +119,14 @@ class JobDetailTests(TestCase):
         for text in ["Lanternfish Labs", "Remote", "Product", "Seed", "Nov 10, 2026"]:
             self.assertContains(response, text)
 
-    def test_company_name_is_plain_text_until_company_pages_exist(self):
+    def test_company_name_links_to_company_page(self):
         self.client.force_login(self.user)
         response = self.client.get(self.url)
-        self.assertContains(response, '<p class="company-name">Lanternfish Labs</p>', html=True)
+        self.assertContains(
+            response,
+            f'<p class="company-name"><a href="/companies/{self.job.company_id}/">Lanternfish Labs</a></p>',
+            html=True,
+        )
 
     def test_company_description_and_website_shown_when_present(self):
         Company.objects.filter(pk=self.job.company_id).update(
@@ -172,6 +176,90 @@ class JobDetailTests(TestCase):
         # Session + user + one query for the job and its company.
         with self.assertNumQueries(3):
             self.client.get(self.url)
+
+
+class CompanyPageTests(TestCase):
+    """Issue #27: company list and company profile pages."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(email="seeker@example.com", password=PASSWORD)
+        self.zeta = Company.objects.create(
+            name="Zeta Health", stage=Company.Stage.SERIES_A, location="Boston, MA",
+            website="https://zeta-health.example.com", description="Care navigation for clinics. " * 10,
+        )
+        self.acme = Company.objects.create(name="Acme Climate", stage=Company.Stage.PRE_SEED)
+        self.empty = Company.objects.create(name="Mango Fintech")
+        make_job("Chief of Staff", company="Zeta Health", posted=date(2026, 11, 1))
+        make_job("Product Lead", company="Zeta Health", posted=date(2026, 11, 12))
+        make_job("Founding Ops", company="Acme Climate")
+
+    def test_urls(self):
+        self.assertEqual(reverse("jobs:company_list"), "/companies/")
+        self.assertEqual(reverse("jobs:company_detail", args=[self.zeta.pk]), f"/companies/{self.zeta.pk}/")
+
+    def test_logged_out_visitor_is_sent_to_login(self):
+        for url in ["/companies/", f"/companies/{self.zeta.pk}/"]:
+            self.assertRedirects(self.client.get(url), f"{reverse('login')}?next={url}")
+
+    def test_list_shows_every_company_sorted_by_name_with_stage_and_job_count(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/companies/")
+        self.assertEqual([c.name for c in response.context["companies"]],
+                         ["Acme Climate", "Mango Fintech", "Zeta Health"])
+        for text in ["Series A", "2 open jobs", "Pre-seed", "1 open job", "Stage not listed", "0 open jobs",
+                     "Care navigation for clinics."]:
+            self.assertContains(response, text)
+        self.assertContains(response, f'<a href="/companies/{self.zeta.pk}/">Zeta Health</a>', html=True)
+
+    def test_list_description_is_shortened_to_one_line(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/companies/")
+        self.assertNotContains(response, self.zeta.description.strip())
+        self.assertContains(response, "…")
+
+    def test_list_uses_a_fixed_number_of_queries(self):
+        for i in range(5):
+            make_job(f"Role {i}", company=f"Extra Co {i}")
+        self.client.force_login(self.user)
+        # Session + user + one query for companies with their job counts.
+        with self.assertNumQueries(3):
+            self.client.get("/companies/")
+
+    def test_detail_shows_company_info_and_its_jobs_newest_first(self):
+        self.client.force_login(self.user)
+        response = self.client.get(f"/companies/{self.zeta.pk}/")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "<h1>Zeta Health</h1>", html=True)
+        for text in ["Care navigation for clinics.", "Series A", "Boston, MA", "Open jobs (2)"]:
+            self.assertContains(response, text)
+        self.assertContains(
+            response,
+            '<a href="https://zeta-health.example.com" target="_blank" rel="noopener noreferrer">https://zeta-health.example.com</a>',
+            html=True,
+        )
+        self.assertEqual([j.title for j in response.context["jobs"]], ["Product Lead", "Chief of Staff"])
+        self.assertNotContains(response, "Founding Ops")  # another company's job
+
+    def test_detail_with_missing_details_and_no_jobs(self):
+        self.client.force_login(self.user)
+        response = self.client.get(f"/companies/{self.empty.pk}/")
+        self.assertContains(response, "Not listed")
+        self.assertContains(response, "No open jobs at Mango Fintech right now.")
+
+    def test_unknown_company_shows_not_found(self):
+        self.client.force_login(self.user)
+        self.assertEqual(self.client.get("/companies/99999/").status_code, 404)
+
+    def test_jobs_list_links_each_company_name_to_its_page(self):
+        self.client.force_login(self.user)
+        response = self.client.get("/jobs/")
+        self.assertContains(response, f'<a href="/companies/{self.zeta.pk}/">Zeta Health</a>', html=True, count=2)
+        self.assertContains(response, f'<a href="/companies/{self.acme.pk}/">Acme Climate</a>', html=True, count=1)
+
+    def test_companies_link_in_navigation(self):
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("home"))
+        self.assertContains(response, '<a href="/companies/">Companies</a>', html=True)
 
 
 class DemoJobsSeedTests(TestCase):

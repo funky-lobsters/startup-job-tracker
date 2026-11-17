@@ -14,7 +14,7 @@
       <article class="job">
         <header>
           <strong><a href="{% url 'jobs:detail' job.pk %}">{{ job.title }}</a></strong><br>
-          <small>{{ job.company.name }}</small>
+          <small><a href="{% url 'jobs:company_detail' job.company.pk %}">{{ job.company.name }}</a></small>
         </header>
         <p>
           {{ job.location }} · {{ job.get_role_type_display }} ·
