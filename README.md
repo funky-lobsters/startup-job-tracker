@@ -206,6 +206,8 @@ create a new key in that service (the old one stays in git history) and update i
   (separate from staging). It does **not** update on merge. To promote what's on staging:
   Render dashboard → **funky-lobsters** → **Manual Deploy** → **Deploy latest commit**.
   Check staging first; production is what graders and the A/B bot see.
+- **Which version is live?** Open `/health/` on either site, e.g. https://funky-lobsters.onrender.com/health/. It shows the
+  short `commit` id of the running code and whether the database works (`"database": "ok"`; 503 and `"error"` if not).
 - Free Render sites sleep after about 15 minutes without visitors. The first visit shows Render's "waking up"
   screen for up to a minute or two; that's normal.
 
