@@ -2,7 +2,7 @@
 
 Team funky-lobsters · Staging: https://funky-lobsters-staging.onrender.com · Production: https://funky-lobsters.onrender.com
 
-Items are grouped by the categories in Kyle's requirements. This file grows each sprint (Sprint 4: complete).
+Items are grouped by the categories in Kyle's requirements. This file grows each sprint; the final version is due with Sprint 4.
 
 ## Delivery
 
@@ -27,15 +27,16 @@ Items are grouped by the categories in Kyle's requirements. This file grows each
   `{"status": "ok", "commit": "8610813", "service": "funky-lobsters", "database": "ok"}`.
   `commit` is the short id of the running code (from Render's `RENDER_GIT_COMMIT`; `unknown` locally), `service` is the
   Render service name (`local` locally). If the database can't be reached it answers **503** with `"database": "error"`
-  instead of crashing, and logs only the kind of error (never connection details). No login needed, no secrets shown,
-  never cached.
-- **Files / PRs:** `core/views.py` (`health`), `config/urls.py`, tests in `core/tests.py`; issue #43.
+  instead of crashing (the app gives up connecting after 5 seconds rather than hanging), and logs only the kind of error
+  (never connection details). No login needed, no secrets shown, never cached.
+- **Files / PRs:** `core/views.py` (`health`), `config/urls.py`, database `connect_timeout` in `config/settings.py`,
+  tests in `core/tests.py`; issue #43, PR #51.
 - **See it working:** https://funky-lobsters-staging.onrender.com/health/ and https://funky-lobsters.onrender.com/health/.
   The first visit after a quiet period can take up to a minute (free Render sites sleep).
 
 ## AI
 
-### 4. Structured LLM output that drives app behaviour (in progress)
+### 4. Structured LLM output that drives app behaviour
 - **What:** "Recommended for you" sends the user's profile and the open jobs to an LLM through OpenRouter (server-side only)
   and asks for JSON that must follow a schema (`job_id` + one-sentence `reason`). The app checks every answer against the
   database: unknown or duplicate job ids are dropped, at most 5 are kept, and any failure (no key, timeout, bad JSON)
