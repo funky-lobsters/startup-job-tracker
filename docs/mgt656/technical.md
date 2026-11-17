@@ -27,7 +27,7 @@ Items are grouped by the categories in Kyle's requirements. This file grows each
   `{"status": "ok", "commit": "8610813", "service": "funky-lobsters", "database": "ok"}`.
   `commit` is the short id of the running code (from Render's `RENDER_GIT_COMMIT`; `unknown` locally), `service` is the
   Render service name (`local` locally). If the database can't be reached it answers **503** with `"database": "error"`
-  instead of crashing (the app gives up connecting after 5 seconds rather than hanging), and logs only the kind of error
+  instead of crashing (the app gives up connecting after 10 seconds rather than hanging), and logs only the kind of error
   (never connection details). No login needed, no secrets shown, never cached.
 - **Files / PRs:** `core/views.py` (`health`), `config/urls.py`, database `connect_timeout` in `config/settings.py`,
   tests in `core/tests.py`; issue #43, PR #51.

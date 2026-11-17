@@ -128,9 +128,9 @@ else:
             database_url, conn_max_age=600, conn_health_checks=True
         )
     }
-    # Give up connecting after 5 seconds instead of waiting forever, so pages (and /health/) report
+    # Give up connecting after 10 seconds (Neon can take a few seconds to wake up) instead of waiting forever, so pages (and /health/) report
     # a database problem instead of hanging until the web server kills the request.
-    DATABASES["default"].setdefault("OPTIONS", {})["connect_timeout"] = 5
+    DATABASES["default"].setdefault("OPTIONS", {})["connect_timeout"] = 10
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
