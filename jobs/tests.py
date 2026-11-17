@@ -87,9 +87,81 @@ class JobListTests(TestCase):
         for i in range(5):
             make_job(f"Role {i}", company=f"Company {i}")
         self.client.force_login(self.user)
-        # Session + user + one jobs query that also loads companies (no extra query per job).
-        with self.assertNumQueries(3):
+        # Session + user + locations for the filter dropdown + one jobs query that also
+        # loads companies (no extra query per job).
+        with self.assertNumQueries(4):
             self.client.get(self.url)
+
+
+class JobFilterTests(TestCase):
+    """Issue #26: filter /jobs/ by role type, location and company stage."""
+
+    def setUp(self):
+        self.user = User.objects.create_user(email="seeker@example.com", password=PASSWORD)
+        self.client.force_login(self.user)
+        Company.objects.create(name="Seedling AI", stage=Company.Stage.SEED)
+        Company.objects.create(name="Bigco Robotics", stage=Company.Stage.SERIES_B_PLUS)
+        make_job("Seed PM in NYC", company="Seedling AI", location="New York, NY",
+                 role_type=Job.RoleType.PRODUCT)
+        make_job("Seed Ops in Boston", company="Seedling AI", location="Boston, MA",
+                 role_type=Job.RoleType.OPERATIONS)
+        make_job("Late PM in Boston", company="Bigco Robotics", location="Boston, MA",
+                 role_type=Job.RoleType.PRODUCT)
+
+    def titles(self, query):
+        response = self.client.get("/jobs/" + query)
+        self.assertEqual(response.status_code, 200)
+        return sorted(job.title for job in response.context["jobs"])
+
+    def test_page_has_three_dropdowns_with_their_options(self):
+        response = self.client.get("/jobs/")
+        for name in ["role", "location", "stage"]:
+            self.assertContains(response, f'<select name="{name}">')
+        for option in ["Product", "Operations", "Strategy", "VC / Investing", "Other",
+                       "New York, NY", "Boston, MA",
+                       "Pre-seed", "Seed", "Series A", "Series B+"]:
+            self.assertContains(response, f">{option}</option>")
+
+    def test_no_filters_shows_every_job_and_no_clear_link(self):
+        response = self.client.get("/jobs/")
+        self.assertEqual(len(response.context["jobs"]), 3)
+        self.assertNotContains(response, "Clear filters")
+
+    def test_filter_by_role_only(self):
+        self.assertEqual(self.titles("?role=product"), ["Late PM in Boston", "Seed PM in NYC"])
+
+    def test_filter_by_location_only(self):
+        self.assertEqual(self.titles("?location=Boston%2C+MA"), ["Late PM in Boston", "Seed Ops in Boston"])
+
+    def test_filter_by_stage_only(self):
+        self.assertEqual(self.titles("?stage=seed"), ["Seed Ops in Boston", "Seed PM in NYC"])
+
+    def test_two_filters_combined(self):
+        self.assertEqual(self.titles("?role=product&stage=seed"), ["Seed PM in NYC"])
+        self.assertEqual(self.titles("?location=Boston%2C+MA&stage=series_b_plus"), ["Late PM in Boston"])
+
+    def test_all_three_filters_combined(self):
+        self.assertEqual(self.titles("?role=operations&location=Boston%2C+MA&stage=seed"),
+                         ["Seed Ops in Boston"])
+
+    def test_chosen_filters_stay_selected_so_the_url_can_be_shared(self):
+        response = self.client.get("/jobs/?role=product&stage=seed")
+        self.assertContains(response, '<option value="product" selected>Product</option>', html=True)
+        self.assertContains(response, '<option value="seed" selected>Seed</option>', html=True)
+        self.assertContains(response, '<form method="get" action="/jobs/" id="job-filters">')
+
+    def test_clear_filters_link_goes_back_to_the_full_list(self):
+        response = self.client.get("/jobs/?role=product")
+        self.assertContains(response, '<a href="/jobs/" id="clear-filters">Clear filters</a>', html=True)
+
+    def test_no_results_message(self):
+        response = self.client.get("/jobs/?role=vc_investing")
+        self.assertContains(response, "No jobs match these filters")
+        self.assertNotContains(response, 'class="job"')
+        self.assertNotContains(response, "No jobs yet")
+
+    def test_unknown_filter_values_are_ignored(self):
+        self.assertEqual(len(self.titles("?role=astronaut&stage=ipo&location=Mars")), 3)
 
 
 class JobDetailTests(TestCase):
