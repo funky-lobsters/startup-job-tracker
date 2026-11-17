@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}{{ job.title }} at {{ job.company.name }} · Funky Lobsters{% endblock %}
+
+{% block content %}
+  <p><a href="{% url 'jobs:list' %}">&larr; All jobs</a></p>
+
+  <article class="job-detail">
+    <header>
+      <hgroup>
+        <h1>{{ job.title }}</h1>
+        {# Plain text for now; becomes a link to the company page once issue #27 exists. #}
+        <p class="company-name">{{ job.company.name }}</p>
+      </hgroup>
+    </header>
+
+    <dl>
+      <dt><strong>Location</strong></dt>
+      <dd>{{ job.location }}</dd>
+
+      <dt><strong>Role type</strong></dt>
+      <dd>{{ job.get_role_type_display }}</dd>
+
+      <dt><strong>Company stage</strong></dt>
+      <dd>{{ job.company.get_stage_display|default:"Not listed" }}</dd>
+
+      <dt><strong>Date posted</strong></dt>
+      <dd><time datetime="{{ job.posted_date|date:'Y-m-d' }}">{{ job.posted_date|date:"M j, Y" }}</time></dd>
+    </dl>
+
+    {% if job.company.description or job.company.website %}
+      <section class="company-about">
+        <h2>About {{ job.company.name }}</h2>
+        {% if job.company.description %}<p>{{ job.company.description|linebreaksbr }}</p>{% endif %}
+        {% if job.company.website %}
+          <p><a href="{{ job.company.website }}" target="_blank" rel="noopener noreferrer">Company website</a></p>
+        {% endif %}
+      </section>
+    {% endif %}
+
+    <footer>
+      <a href="{{ job.apply_url }}" target="_blank" rel="noopener noreferrer" role="button">Apply</a>
+      <small>Opens the original posting in a new tab.</small>
+    </footer>
+  </article>
+{% endblock %}

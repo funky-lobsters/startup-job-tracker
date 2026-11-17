@@ -81,6 +81,23 @@ class RecommendationsPageTests(RecommendationsTestCase):
         self.assertLess(html.index("Investment Associate"), html.index("Product Manager"))
 
     @patch(CALL_AI)
+    def test_each_job_links_to_its_detail_page_and_apply_opens_new_tab(self, fake_ai):
+        self.make_profile()
+        fake_ai.return_value = ai_reply((self.pm_job.id, "You did customer interviews in consulting."))
+        self.client.force_login(self.user)
+        response = self.client.get(self.url)
+
+        self.assertContains(
+            response, f'<a href="/jobs/{self.pm_job.id}/">Product Manager</a>', html=True,
+        )
+        self.assertContains(
+            response,
+            '<a href="https://lanternfish-labs.example.com/careers/pm" target="_blank" '
+            'rel="noopener noreferrer" role="button">Apply</a>',
+            html=True,
+        )
+
+    @patch(CALL_AI)
     def test_profile_and_jobs_are_sent_to_the_ai(self, fake_ai):
         self.make_profile()
         fake_ai.return_value = ai_reply()
