@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Companies · Funky Lobsters{% endblock %}
+
+{% block content %}
+  <hgroup>
+    <h1>Companies</h1>
+    <p>{{ companies|length }} compan{{ companies|length|pluralize:"y,ies" }}, A to Z.</p>
+  </hgroup>
+
+  {% if companies %}
+    {% for company in companies %}
+      <article class="company">
+        <header>
+          <strong><a href="{% url 'jobs:company_detail' company.pk %}">{{ company.name }}</a></strong>
+        </header>
+        {% if company.description %}<p>{{ company.description|truncatechars:120 }}</p>{% endif %}
+        <p><small>
+          {{ company.get_stage_display|default:"Stage not listed" }} ·
+          {{ company.job_count }} open job{{ company.job_count|pluralize }}
+        </small></p>
+      </article>
+    {% endfor %}
+  {% else %}
+    <article>
+      <p id="empty-state">No companies yet.</p>
+    </article>
+  {% endif %}
+{% endblock %}

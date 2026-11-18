@@ -9,8 +9,7 @@
     <header>
       <hgroup>
         <h1>{{ job.title }}</h1>
-        {# Plain text for now; becomes a link to the company page once issue #27 exists. #}
-        <p class="company-name">{{ job.company.name }}</p>
+        <p class="company-name"><a href="{% url 'jobs:company_detail' job.company.pk %}">{{ job.company.name }}</a></p>
       </hgroup>
     </header>
 

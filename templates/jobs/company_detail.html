@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}{{ company.name }} · Funky Lobsters{% endblock %}
+
+{% block content %}
+  <p><a href="{% url 'jobs:company_list' %}">&larr; All companies</a></p>
+
+  <article class="company-detail">
+    <header>
+      <h1>{{ company.name }}</h1>
+    </header>
+
+    {% if company.description %}<p>{{ company.description|linebreaksbr }}</p>{% endif %}
+
+    <dl>
+      <dt><strong>Stage</strong></dt>
+      <dd>{{ company.get_stage_display|default:"Not listed" }}</dd>
+
+      <dt><strong>Location</strong></dt>
+      <dd>{{ company.location|default:"Not listed" }}</dd>
+
+      <dt><strong>Website</strong></dt>
+      <dd>
+        {% if company.website %}
+          <a href="{{ company.website }}" target="_blank" rel="noopener noreferrer">{{ company.website }}</a>
+        {% else %}
+          Not listed
+        {% endif %}
+      </dd>
+    </dl>
+  </article>
+
+  <h2>Open jobs ({{ jobs|length }})</h2>
+  {% if jobs %}
+    {% for job in jobs %}
+      <article class="job">
+        <header>
+          <strong><a href="{% url 'jobs:detail' job.pk %}">{{ job.title }}</a></strong>
+        </header>
+        <p>
+          {{ job.location }} · {{ job.get_role_type_display }} ·
+          <small>Posted <time datetime="{{ job.posted_date|date:'Y-m-d' }}">{{ job.posted_date|date:"M j, Y" }}</time></small>
+        </p>
+        <footer>
+          <a href="{{ job.apply_url }}" target="_blank" rel="noopener noreferrer" role="button">Apply</a>
+        </footer>
+      </article>
+    {% endfor %}
+  {% else %}
+    <article>
+      <p id="no-jobs">No open jobs at {{ company.name }} right now.</p>
+    </article>
+  {% endif %}
+{% endblock %}
