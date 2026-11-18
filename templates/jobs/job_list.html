@@ -5,8 +5,45 @@
 {% block content %}
   <hgroup>
     <h1>Startup jobs</h1>
-    <p>{{ jobs|length }} open role{{ jobs|length|pluralize }}, newest first.</p>
+    <p>{{ jobs|length }} open role{{ jobs|length|pluralize }}{% if filters_active %} match your filters{% endif %}, newest first.</p>
   </hgroup>
+
+  {# Filters live in the URL (e.g. /jobs/?role=product&stage=seed) so a filtered list can be shared or bookmarked. #}
+  <form method="get" action="{% url 'jobs:list' %}" id="job-filters">
+    <div class="grid">
+      <label>
+        Role type
+        <select name="role">
+          <option value="">Any role</option>
+          {% for value, label in role_choices %}
+            <option value="{{ value }}"{% if selected.role == value %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+      <label>
+        Location
+        <select name="location">
+          <option value="">Any location</option>
+          {% for loc in locations %}{% if loc %}
+            <option value="{{ loc }}"{% if selected.location == loc %} selected{% endif %}>{{ loc }}</option>
+          {% endif %}{% endfor %}
+        </select>
+      </label>
+      <label>
+        Company stage
+        <select name="stage">
+          <option value="">Any stage</option>
+          {% for value, label in stage_choices %}
+            <option value="{{ value }}"{% if selected.stage == value %} selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <button type="submit">Filter</button>
+    {% if filters_active %}
+      <a href="{% url 'jobs:list' %}" id="clear-filters">Clear filters</a>
+    {% endif %}
+  </form>
 
   {% if jobs %}
     {# One card per job, so every detail and the Apply button fit on a phone screen. #}
@@ -27,7 +64,11 @@
     {% endfor %}
   {% else %}
     <article>
-      <p id="empty-state">No jobs yet.</p>
+      {% if filters_active %}
+        <p id="empty-state">No jobs match these filters. <a href="{% url 'jobs:list' %}">Clear filters</a></p>
+      {% else %}
+        <p id="empty-state">No jobs yet.</p>
+      {% endif %}
     </article>
   {% endif %}
 {% endblock %}
