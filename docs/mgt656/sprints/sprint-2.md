@@ -34,13 +34,13 @@ pull requests, and start the AI feature (job recommendations through OpenRouter,
 
 ## What works on staging now
 
-Log in at `/login/` (grader accounts: see the submission notes), then:
-- **Jobs**: all demo jobs, newest first; click one for its detail page, **Apply** opens the posting in a new tab.
+Log in at [https://funky-lobsters-staging.onrender.com/login/](https://funky-lobsters-staging.onrender.com/login/) (grader accounts: see the submission notes), then:
+- **[Jobs](https://funky-lobsters-staging.onrender.com/jobs/)**: all demo jobs, newest first; click one for its detail page, **Apply** opens the posting in a new tab.
 - Filter the jobs by role type, location and company stage; **Clear filters** resets the list.
-- **Companies**: every company A to Z; click one for its details and jobs (company names on job pages link there too).
-- **Profile**: save your background, skills and preferences.
-- **For you**: up to 5 jobs the AI picked for your profile, each with a reason (with no profile, it asks you to fill one in first).
-- `/health/` shows the live commit and database status; `/26fd193` and `/26fd193/stats` still work, with traffic sources.
+- **[Companies](https://funky-lobsters-staging.onrender.com/companies/)**: every company A to Z; click one for its details and jobs (company names on job pages link there too).
+- **[Profile](https://funky-lobsters-staging.onrender.com/profile/)**: save your background, skills and preferences.
+- **[For you](https://funky-lobsters-staging.onrender.com/recommendations/)**: up to 5 jobs the AI picked for your profile, each with a reason (with no profile, it asks you to fill one in first).
+- [`/health/`](https://funky-lobsters-staging.onrender.com/health/) shows the live commit and database status; [`/26fd193`](https://funky-lobsters-staging.onrender.com/26fd193) and [`/26fd193/stats`](https://funky-lobsters-staging.onrender.com/26fd193/stats) still work, with traffic sources.
 
 The same build is live on production.
 
